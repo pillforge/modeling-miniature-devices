@@ -4,9 +4,19 @@
       "MainProject": {
         "src": "src/seeds/MainProject"
       }
-    }
+    },
+    "addons": {},
+    "decorators": {},
+    "layouts": {},
+    "plugins": {},
+    "visualizers": {}
   },
   "dependencies": {
-    "seeds": {}
+    "seeds": {},
+    "addons": {},
+    "decorators": {},
+    "layouts": {},
+    "plugins": {},
+    "visualizers": {}
   }
 }

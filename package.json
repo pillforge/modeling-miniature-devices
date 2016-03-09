@@ -6,6 +6,8 @@
   },
   "version": "1.0.0",
   "dependencies": {
+    "dot": "^1.0.3",
+    "fs-extra": "^0.26.5",
     "webgme": "github:webgme/webgme"
   },
   "devDependencies": {

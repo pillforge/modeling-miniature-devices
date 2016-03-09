@@ -1,0 +1,8 @@
+configuration {{=it.name}}AppC {
+}
+
+implementation {
+  components MainC;
+  components {{=it.name}}C as App;
+  App.Boot -> MainC;
+}

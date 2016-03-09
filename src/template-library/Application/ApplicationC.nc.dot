@@ -1,0 +1,8 @@
+module {{=it.name}}C {
+  uses interface Boot;
+}
+
+implementation {
+  event void Boot.booted() {
+  }
+}
