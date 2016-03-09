@@ -1,11 +1,13 @@
+/*jshint node: true*/
+
 'use strict';
 
-var config = require('./config.webgme'),
-    validateConfig = require('webgme/config/validator');
+var config = require('./config.webgme');
+var validateConfig = require('webgme/config/validator');
 
-// Add/overwrite any additional settings here
-// config.server.port = 8080;
-// config.mongo.uri = 'mongodb://127.0.0.1:27017/webgme_my_app';
+config.seedProjects.basePaths = config.seedProjects.basePaths
+  .filter(path => path.indexOf('webgme') === -1);
+config.seedProjects.defaultProject = 'MainProject';
 
 validateConfig(config);
 module.exports = config;

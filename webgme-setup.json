@@ -1,4 +1,12 @@
 {
-  "components": {},
-  "dependencies": {}
+  "components": {
+    "seeds": {
+      "MainProject": {
+        "src": "src/seeds/MainProject"
+      }
+    }
+  },
+  "dependencies": {
+    "seeds": {}
+  }
 }
