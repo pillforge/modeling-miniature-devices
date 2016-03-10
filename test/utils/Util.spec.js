@@ -7,12 +7,15 @@ describe('Util', function() {
   var fs = require('fs-extra');
   var util = testFixture.requirejs('src/utils/Util');
 
+  var target = 'exp430';
+
   describe('#compileApplication', function() {
     it('should generate barebone Application', function() {
-      var tmpobj = util.compileApplication({name: 'Test'});
+      var tmpobj = util.compileApplication({name: 'Test'}, target);
       [ 'TestC.nc',
         'TestAppC.nc',
-        'Makefile'
+        'Makefile',
+        path.join('build', target)
       ].forEach(file => {
         var f_path = path.join(tmpobj.name, file);
         expect(fs.existsSync(f_path)).to.equal(true, f_path + ' should exist');
