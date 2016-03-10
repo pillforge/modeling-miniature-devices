@@ -10,8 +10,9 @@ describe('Util', function() {
   var target = 'exp430';
 
   describe('#compileApplication', function() {
-    it('should generate barebone Application', function() {
-      var tmpobj = util.compileApplication({name: 'Test'}, target);
+
+    it('should compile with an empty Application', function() {
+      var tmpobj = util.compileApplication({name: 'Test', components: []}, target);
       [ 'TestC.nc',
         'TestAppC.nc',
         'Makefile',
@@ -24,5 +25,31 @@ describe('Util', function() {
       appc_nc.should.contain('configuration TestAppC');
       appc_nc.should.contain('App.Boot -> MainC');
     });
+
+    it('should compile with a Sensor', function () {
+      var tmpobj = util.compileApplication({
+        name: 'Test',
+        components: [
+          {
+            name: 'AccelGyro',
+            type: 'Lsm330dlc',
+            rate: 100,
+            provides: ['Read<Accel_t>:AccelRead']
+          }
+        ]
+      }, target);
+      var appc_nc = fs.readFileSync(path.join(tmpobj.name, 'TestAppC.nc'), 'utf8');
+      appc_nc.should.contain('components new TimerMilliC() as AccelGyroTimer;');
+      appc_nc.should.contain('App.AccelGyroTimer -> AccelGyroTimer;');
+
+      var c_nc = fs.readFileSync(path.join(tmpobj.name, 'TestC.nc'), 'utf8');
+      c_nc.should.contain('interface Timer<TMilli> as AccelGyroTimer;');
+      c_nc.should.contain('uint8_t accel_gyro_timer_rate = 100;');
+      c_nc.should.contain('call AccelGyroTimer.startPeriodic(accel_gyro_timer_rate);');
+      c_nc.should.contain('event void AccelGyroTimer.fired() {');
+      c_nc.should.contain('');
+    });
+
   });
+
 });

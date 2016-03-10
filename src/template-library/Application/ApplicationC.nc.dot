@@ -1,8 +1,19 @@
+/**
+ * Automatically generated file
+ *
+ * Created on: {{=new Date()}}
+ */
+
 module {{=it.name}}C {
   uses interface Boot;
+  {{~it.timers :v}}uses interface Timer<TMilli> as {{=v.name}};{{~}}
 }
 
 implementation {
+  {{~it.timers :v}}uint8_t {{=v.name_}} = {{=v.rate}};{{~}}
   event void Boot.booted() {
+    {{~it.timers :v}}call {{=v.name}}.startPeriodic({{=v.name_}});{{~}}
   }
+  {{~it.timers :v}}event void {{=v.name}}.fired() {
+  }{{~}}
 }

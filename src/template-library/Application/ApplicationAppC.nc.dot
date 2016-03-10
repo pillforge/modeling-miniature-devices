@@ -1,3 +1,9 @@
+/**
+ * Automatically generated file
+ *
+ * Created on: {{=new Date()}}
+ */
+
 configuration {{=it.name}}AppC {
 }
 
@@ -5,4 +11,7 @@ implementation {
   components MainC;
   components {{=it.name}}C as App;
   App.Boot -> MainC;
+
+  {{~it.timers :v}}components new TimerMilliC() as {{=v.name}};
+  App.{{=v.name}} -> {{=v.name}};{{~}}
 }
