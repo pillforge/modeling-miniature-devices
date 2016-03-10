@@ -8,7 +8,12 @@
     "addons": {},
     "decorators": {},
     "layouts": {},
-    "plugins": {},
+    "plugins": {
+      "Main": {
+        "src": "src/plugins/Main",
+        "test": "test/plugins/Main"
+      }
+    },
     "visualizers": {}
   },
   "dependencies": {
