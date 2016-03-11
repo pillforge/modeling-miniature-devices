@@ -4,9 +4,13 @@
  * Created on: {{=new Date()}}
  */
 
+{{~it.includes :v}}#include "{{=v}}"{{~}}
+
 module {{=it.name}}C {
   uses interface Boot;
   {{~it.timers :v}}uses interface Timer<TMilli> as {{=v.name}};{{~}}
+  {{~it.components :v}}{{~v.connections :c}}
+  uses interface {{=c.type}} as {{=c.as}};{{~}}{{~}}
 }
 
 implementation {
@@ -14,6 +18,11 @@ implementation {
   event void Boot.booted() {
     {{~it.timers :v}}call {{=v.name}}.startPeriodic({{=v.name_}});{{~}}
   }
-  {{~it.timers :v}}event void {{=v.name}}.fired() {
+  {{~it.timers :v}}
+  event void {{=v.name}}.fired() {{{~it.components :v}}{{~v.connections :c}}
+    call {{=c.as}}.{{=c.command}}();{{~}}{{~}}
   }{{~}}
+  {{~it.components :v}}{{~v.connections :c}}
+  event void {{=c.as}}.{{=c.command}}Done(error_t err, {{=c.type.match(/<(.*)>/)[1]}} val) {
+  }{{~}}{{~}}
 }

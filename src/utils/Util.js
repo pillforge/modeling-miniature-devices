@@ -2,6 +2,7 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
   'use strict';
 
   var template_library_path = path.join(module.uri, '..', '..', 'template-library');
+  var component_library_path = path.join(module.uri, '..', '..', 'component-library');
 
   return {
     compileApplication: compileApplication
@@ -17,16 +18,21 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
     fs.outputFileSync(path.join(tmpobj.name, obj.name + 'C.nc'), module_nc);
     fs.outputFileSync(path.join(tmpobj.name, 'Makefile'), makefile);
     var execSync = require('child_process').execSync;
-    execSync('make ' + target, {
-      cwd: tmpobj.name
-    });
+    if (target) {
+      execSync('make ' + target, {
+        cwd: tmpobj.name
+      });
+    }
     return tmpobj;
   }
 
   function _processObj (obj) {
     var o = {
       name: obj.name,
+      cflags_includes: [],
       timers: [],
+      components: [],
+      includes: []
     };
     Object.keys(obj.components).forEach(key => {
       var component = obj.components[key];
@@ -37,6 +43,22 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
           rate: component.rate
         });
       }
+      o.cflags_includes.push(path.join(component_library_path, component.type));
+      o.components.push({
+        name: component.name,
+        type: component.type + 'C',
+        connections: component.provides.map(conn => {
+          var c = conn.src.split(':');
+          return {
+            type: c[0],
+            as: c[1],
+            command: c[2]
+          };
+        })
+      });
+    });
+    o.cflags_includes.forEach(include => {
+      o.includes = o.includes.concat(fs.readdirSync(include).filter(file => path.extname(file) === '.h'));
     });
     return o;
   }
