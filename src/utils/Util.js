@@ -28,7 +28,8 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
       name: obj.name,
       timers: [],
     };
-    obj.components.forEach(component => {
+    Object.keys(obj.components).forEach(key => {
+      var component = obj.components[key];
       if (component.rate) {
         o.timers.push({
           name: component.name + 'Timer',

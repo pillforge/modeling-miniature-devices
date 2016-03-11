@@ -12,7 +12,10 @@ describe('Util', function() {
   describe('#compileApplication', function() {
 
     it('should compile with an empty Application', function() {
-      var tmpobj = util.compileApplication({name: 'Test', components: []}, target);
+      var tmpobj = util.compileApplication({
+        name: 'Test',
+        components: {}
+      }, target);
       [ 'TestC.nc',
         'TestAppC.nc',
         'Makefile',
@@ -29,14 +32,19 @@ describe('Util', function() {
     it('should compile with a Sensor', function () {
       var tmpobj = util.compileApplication({
         name: 'Test',
-        components: [
-          {
+        components: {
+          AccelGyro: {
             name: 'AccelGyro',
             type: 'Lsm330dlc',
             rate: 100,
-            provides: ['Read<Accel_t>:AccelRead']
+            provides: [
+              {
+                src: 'Read<Accel_t>:AccelRead',
+                dst: ''
+              }
+            ]
           }
-        ]
+        }
       }, target);
       var appc_nc = fs.readFileSync(path.join(tmpobj.name, 'TestAppC.nc'), 'utf8');
       appc_nc.should.contain('components new TimerMilliC() as AccelGyroTimer;');
