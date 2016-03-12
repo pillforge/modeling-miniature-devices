@@ -1,0 +1,8 @@
+  event void {{=it.name}}Timer.fired() {
+    call {{=it.name}}AccelRead.read();
+  }
+
+  event void {{=it.name}}AccelRead.readDone(error_t err, Accel_t val) {
+    {{=it.name_}}_data = val;{{~it.event_calls :v}}
+    {{=v}}{{~}}
+  }

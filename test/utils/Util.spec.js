@@ -14,8 +14,11 @@ describe('Util', function() {
     it('should compile with an empty Application', function() {
       var tmpobj = util.compileApplication({
         name: 'Test',
+        source: [],
+        sink: [],
         components: {}
       }, target);
+
       [ 'TestC.nc',
         'TestAppC.nc',
         'Makefile',
@@ -24,14 +27,36 @@ describe('Util', function() {
         var f_path = path.join(tmpobj.name, file);
         expect(fs.existsSync(f_path)).to.equal(true, f_path + ' should exist');
       });
+
+      var c_nc = fs.readFileSync(path.join(tmpobj.name, 'TestC.nc'), 'utf8');
       var appc_nc = fs.readFileSync(path.join(tmpobj.name, 'TestAppC.nc'), 'utf8');
-      appc_nc.should.contain('configuration TestAppC');
-      appc_nc.should.contain('App.Boot -> MainC');
+      var makefile = fs.readFileSync(path.join(tmpobj.name, 'Makefile'), 'utf8');
+
+      c_nc.should.contain([
+        'module TestC {',
+        '  uses interface Boot;',
+        '}'
+      ].join('\n'));
+      c_nc.should.contain([
+        '  event void Boot.booted() {',
+        '  }'
+      ].join('\n'));
+
+      appc_nc.should.contain([
+       '  components MainC;',
+       '  components TestC as App;',
+       '  App.Boot -> MainC;'
+      ].join('\n'));
+
+      makefile.should.contain('COMPONENT=TestAppC');
+      makefile.should.contain('include $(MAKERULES)');
     });
 
-    it('should compile with a Sensor', function () {
+    it('should compile with a Sensor and Radio', function () {
       var tmpobj = util.compileApplication({
         name: 'Test',
+        source: 'AccelGyro',
+        sink: ['Radio'],
         components: {
           AccelGyro: {
             name: 'AccelGyro',
@@ -39,37 +64,80 @@ describe('Util', function() {
             rate: 100,
             provides: [
               {
-                src: 'Read<Accel_t>:AccelRead:read',
-                dst: ''
+                src: 'AccelRead',
+                dst: 'Radio'
               }
-            ]
+            ],
+            prev: [],
+            next: ['Radio']
+          },
+          Radio: {
+            name: 'Radio',
+            type: 'TosRadio',
+            provides: [],
+            prev: ['AccelGyro'],
+            next: []
           }
         }
-      }, target);
-      var makefile = fs.readFileSync(path.join(tmpobj.name, 'Makefile'), 'utf8');
-      makefile.should.match(/CFLAGS\+=-I.*Lsm330dlc/);
-
-      var appc_nc = fs.readFileSync(path.join(tmpobj.name, 'TestAppC.nc'), 'utf8');
-      appc_nc.should.contain('components new TimerMilliC() as AccelGyroTimer;');
-      appc_nc.should.contain('App.AccelGyroTimer -> AccelGyroTimer;');
-
-      appc_nc.should.contain('components Lsm330dlcC as AccelGyro;');
-      appc_nc.should.contain('App.AccelRead -> AccelGyro.AccelRead;');
-      appc_nc.should.contain('');
+      }, '');
 
       var c_nc = fs.readFileSync(path.join(tmpobj.name, 'TestC.nc'), 'utf8');
-      c_nc.should.contain('interface Timer<TMilli> as AccelGyroTimer;');
-      c_nc.should.contain('uint8_t accel_gyro_timer_rate = 100;');
-      c_nc.should.contain('call AccelGyroTimer.startPeriodic(accel_gyro_timer_rate);');
-      c_nc.should.contain('event void AccelGyroTimer.fired() {');
+      var appc_nc = fs.readFileSync(path.join(tmpobj.name, 'TestAppC.nc'), 'utf8');
+      var makefile = fs.readFileSync(path.join(tmpobj.name, 'Makefile'), 'utf8');
 
-      c_nc.should.contain('#include "Lsm330dlc.h"');
-      c_nc.should.contain('uses interface Read<Accel_t> as AccelRead;');
-      c_nc.should.contain('call AccelRead.read();');
-      c_nc.should.contain('event void AccelRead.readDone(error_t err, Accel_t val) {');
-      c_nc.should.contain('');
+      c_nc.should.contain([
+        '  event void Boot.booted() {',
+        '    call RadioSplitControl.start();',
+        '  }'
+      ].join('\n'));
+
+      c_nc.should.contain([
+        '  event void RadioSplitControl.startDone(error_t err) {',
+        '    if (err == SUCCESS) {',
+        '      AccelGyroTimer.startPeriodic(accel_gyro_timer_rate);',
+        '    } else {',
+        '      call RadioSplitControl.start();',
+        '    }',
+        '  }'
+      ].join('\n'));
+
+      c_nc.should.contain([
+        '  event void AccelGyroTimer.fired() {',
+        '    call AccelGyroAccelRead.read();',
+        '  }',
+      ].join('\n'));
+
+      c_nc.should.contain([
+      '  event void AccelGyroAccelRead.readDone(error_t err, Accel_t val) {',
+      '    accel_gyro_data = val;',
+      '    post RadioSendTask();',
+      '  }',
+      ].join('\n'));
+
+      c_nc.should.contain([
+        '  task void RadioSendTask() {',
+        '    RadioDataMsg* msg = (RadioDataMsg*) call RadioPacket.getPayload(&radio_packet, sizeof(RadioDataMsg));',
+        '    msg->data = accel_gyro_data;',
+        '    call RadioAMSend.send(radio_send_addr, &radio_packet, sizeof(RadioDataMsg));',
+        '  }'
+      ].join('\n'));
+
+      c_nc.should.contain([
+        '  event void RadioSplitControl.stopDone(error_t err) {',
+        '  }'
+      ].join('\n'));
+
+      c_nc.should.contain([
+        '  event void RadioAMSend.sendDone(message_t* bufPtr, error_t error) {',
+        '  }'
+      ].join('\n'));
+
+      c_nc.should.contain([
+        '',
+        ''
+      ].join('\n'));
+
     });
 
   });
-
 });

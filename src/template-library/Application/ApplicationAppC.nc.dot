@@ -11,11 +11,4 @@ implementation {
   components MainC;
   components {{=it.name}}C as App;
   App.Boot -> MainC;
-
-  {{~it.timers :v}}components new TimerMilliC() as {{=v.name}};
-  App.{{=v.name}} -> {{=v.name}};{{~}}
-
-  {{~it.components :v}}components {{=v.type}} as {{=v.name}};
-  {{~v.connections :c}}App.{{=c.as}} -> {{=v.name}}.{{=c.as}};
-  {{~}}{{~}}
 }

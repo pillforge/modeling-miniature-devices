@@ -11,11 +11,11 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
   function compileApplication (obj, target) {
     var tmpobj = tmp.dirSync();
     var processed_obj = _processObj(obj);
-    var config_nc = _compileTemplate('Application/ApplicationAppC.nc.dot', processed_obj);
     var module_nc = _compileTemplate('Application/ApplicationC.nc.dot', processed_obj);
     var makefile = _compileTemplate('Application/Makefile.dot', processed_obj);
-    fs.outputFileSync(path.join(tmpobj.name, obj.name + 'AppC.nc'), config_nc);
+    var config_nc = _compileTemplate('Application/ApplicationAppC.nc.dot', processed_obj);
     fs.outputFileSync(path.join(tmpobj.name, obj.name + 'C.nc'), module_nc);
+    fs.outputFileSync(path.join(tmpobj.name, obj.name + 'AppC.nc'), config_nc);
     fs.outputFileSync(path.join(tmpobj.name, 'Makefile'), makefile);
     var execSync = require('child_process').execSync;
     if (target) {
@@ -27,40 +27,57 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
   }
 
   function _processObj (obj) {
+    var components = obj.components;
     var o = {
       name: obj.name,
-      cflags_includes: [],
-      timers: [],
-      components: [],
-      includes: []
+      init_calls: [],
+      implementations: []
     };
-    Object.keys(obj.components).forEach(key => {
-      var component = obj.components[key];
-      if (component.rate) {
-        o.timers.push({
-          name: component.name + 'Timer',
-          name_: snakeCase(component.name + 'TimerRate'),
-          rate: component.rate
-        });
-      }
-      o.cflags_includes.push(path.join(component_library_path, component.type));
-      o.components.push({
-        name: component.name,
-        type: component.type + 'C',
-        connections: component.provides.map(conn => {
-          var c = conn.src.split(':');
-          return {
-            type: c[0],
-            as: c[1],
-            command: c[2]
-          };
-        })
-      });
+    obj.sink.forEach(sink => {
+      o.init_calls.push(_getInitCalls(components[sink]));
     });
-    o.cflags_includes.forEach(include => {
-      o.includes = o.includes.concat(fs.readdirSync(include).filter(file => path.extname(file) === '.h'));
+    Object.keys(components).forEach(key => {
+      o.implementations.push(_getImplementation(components, components[key]));
     });
     return o;
+  }
+
+  function _getImplementation (components, component) {
+    var o = {
+      name: component.name,
+      name_: snakeCase(component.name),
+      init_calls: [],
+      event_calls: [],
+      data_variables: []
+    };
+    component.prev.forEach(prev => {
+      o.init_calls.push(_getInitCalls(components[prev]));
+      o.data_variables.push(_getDataVariable(components[prev]));
+    });
+    component.next.forEach(next => {
+      o.event_calls.push(_getEventCalls(components[next]));
+    });
+    var type = component.type;
+    return _compileTemplate(path.join(type, type + '.nc.dot'), o);
+  }
+
+  function _getDataVariable(component) {
+    return snakeCase(component.name + 'Data');
+  }
+
+  function _getEventCalls (component) {
+    var type = component.type;
+    return _compileTemplate(path.join(type, type + '.event.nc.dot'), {
+      name: component.name
+    });
+  }
+
+  function _getInitCalls (component) {
+    var type = component.type;
+    return _compileTemplate(path.join(type, type + '.init.nc.dot'), {
+      name: component.name,
+      name_: snakeCase(component.name),
+    });
   }
 
   function _compileTemplate (template_path, obj) {

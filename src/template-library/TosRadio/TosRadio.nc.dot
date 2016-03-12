@@ -1,0 +1,19 @@
+  event void {{=it.name}}SplitControl.startDone(error_t err) {
+    if (err == SUCCESS) {{{~it.init_calls :v}}
+      {{=v}}{{~}}
+    } else {
+      call {{=it.name}}SplitControl.start();
+    }
+  }
+
+  task void {{=it.name}}SendTask() {
+    {{=it.name}}DataMsg* msg = ({{=it.name}}DataMsg*) call {{=it.name}}Packet.getPayload(&{{=it.name_}}_packet, sizeof({{=it.name}}DataMsg));
+    msg->data = {{=it.data_variables[0]}};
+    call {{=it.name}}AMSend.send({{=it.name_}}_send_addr, &{{=it.name_}}_packet, sizeof({{=it.name}}DataMsg));
+  }
+
+  event void {{=it.name}}SplitControl.stopDone(error_t err) {
+  }
+
+  event void {{=it.name}}AMSend.sendDone(message_t* bufPtr, error_t error) {
+  }
