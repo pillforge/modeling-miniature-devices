@@ -85,6 +85,12 @@ describe('Util', function() {
       var appc_nc = fs.readFileSync(path.join(tmpobj.name, 'TestAppC.nc'), 'utf8');
       var makefile = fs.readFileSync(path.join(tmpobj.name, 'Makefile'), 'utf8');
 
+      c_nc.should.contain('uses interface Read<Accel_t> as AccelGyroAccelRead;');
+      c_nc.should.contain('uses interface Timer<TMilli> as AccelGyroTimer');
+      c_nc.should.contain('uses interface SplitControl as RadioSplitControl;');
+      c_nc.should.contain('uses interface Packet as RadioPacket;');
+      c_nc.should.contain('uses interface AMSend as RadioAMSend;');
+
       c_nc.should.contain([
         '  event void Boot.booted() {',
         '    call RadioSplitControl.start();',

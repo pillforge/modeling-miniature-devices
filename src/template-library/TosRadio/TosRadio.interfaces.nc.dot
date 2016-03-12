@@ -1,0 +1,3 @@
+  uses interface SplitControl as {{=it.name}}SplitControl;
+  uses interface Packet as {{=it.name}}Packet;
+  uses interface AMSend as {{=it.name}}AMSend;

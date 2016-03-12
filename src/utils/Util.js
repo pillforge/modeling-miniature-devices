@@ -31,15 +31,25 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
     var o = {
       name: obj.name,
       init_calls: [],
-      implementations: []
+      implementations: [],
+      interfaces: []
     };
     obj.sink.forEach(sink => {
       o.init_calls.push(_getInitCalls(components[sink]));
     });
     Object.keys(components).forEach(key => {
-      o.implementations.push(_getImplementation(components, components[key]));
+      var component = components[key];
+      o.implementations.push(_getImplementation(components, component));
+      o.interfaces.push(_getInterfaces(component));
     });
     return o;
+  }
+
+  function _getInterfaces (component) {
+    var type = component.type;
+    return _compileTemplate(path.join(type, type + '.interfaces.nc.dot'), {
+      name: component.name
+    });
   }
 
   function _getImplementation (components, component) {
