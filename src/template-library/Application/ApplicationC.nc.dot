@@ -3,6 +3,8 @@
  *
  * Created on: {{=new Date()}}
  */
+{{~it.includes :v}}
+#include "{{=v}}"{{~}}
 
 module {{=it.name}}C {
   uses interface Boot;{{~it.interfaces :v}}

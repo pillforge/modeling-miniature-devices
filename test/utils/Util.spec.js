@@ -85,6 +85,8 @@ describe('Util', function() {
       var appc_nc = fs.readFileSync(path.join(tmpobj.name, 'TestAppC.nc'), 'utf8');
       var makefile = fs.readFileSync(path.join(tmpobj.name, 'Makefile'), 'utf8');
 
+      c_nc.should.contain('#include "Lsm330dlc.h"');
+
       c_nc.should.contain('uses interface Read<Accel_t> as AccelGyroAccelRead;');
       c_nc.should.contain('uses interface Timer<TMilli> as AccelGyroTimer');
       c_nc.should.contain('uses interface SplitControl as RadioSplitControl;');
@@ -142,6 +144,8 @@ describe('Util', function() {
         '',
         ''
       ].join('\n'));
+
+      makefile.should.match(/CFLAGS\+=-I.*Lsm330dlc/);
 
     });
 

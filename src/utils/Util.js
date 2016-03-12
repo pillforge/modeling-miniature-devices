@@ -30,9 +30,11 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
     var components = obj.components;
     var o = {
       name: obj.name,
+      includes: [],
+      interfaces: [],
       init_calls: [],
       implementations: [],
-      interfaces: []
+      cflags_includes: []
     };
     obj.sink.forEach(sink => {
       o.init_calls.push(_getInitCalls(components[sink]));
@@ -41,6 +43,11 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
       var component = components[key];
       o.implementations.push(_getImplementation(components, component));
       o.interfaces.push(_getInterfaces(component));
+      if (component.type.indexOf('Tos') !== 0)
+        o.cflags_includes.push(path.join(component_library_path, component.type));
+    });
+    o.cflags_includes.forEach(include => {
+      o.includes = o.includes.concat(fs.readdirSync(include).filter(file => path.extname(file) === '.h'));
     });
     return o;
   }
