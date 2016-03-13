@@ -1,0 +1,3 @@
+  message_t {{=it.name_}}_packet;
+  uint8_t {{=it.name_}}_send_addr;
+  task void {{=it.name}}SendTask();

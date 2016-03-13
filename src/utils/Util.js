@@ -32,17 +32,19 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
       name: obj.name,
       includes: [],
       interfaces: [],
+      variables: [],
       init_calls: [],
       implementations: [],
       cflags_includes: []
     };
     obj.sink.forEach(sink => {
-      o.init_calls.push(_getInitCalls(components[sink]));
+      o.init_calls.push(_getPartial(components[sink], 'init'));
     });
     Object.keys(components).forEach(key => {
       var component = components[key];
+      o.interfaces.push(_getPartial(component, 'interfaces'));
+      o.variables.push(_getPartial(component, 'variables'));
       o.implementations.push(_getImplementation(components, component));
-      o.interfaces.push(_getInterfaces(component));
       if (component.type.indexOf('Tos') !== 0)
         o.cflags_includes.push(path.join(component_library_path, component.type));
     });
@@ -52,10 +54,11 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
     return o;
   }
 
-  function _getInterfaces (component) {
+  function _getPartial (component, part) {
     var type = component.type;
-    return _compileTemplate(path.join(type, type + '.interfaces.nc.dot'), {
-      name: component.name
+    return _compileTemplate(path.join(type, type + '.' + part + '.nc.dot'), {
+      name: component.name,
+      name_: snakeCase(component.name)
     });
   }
 
@@ -68,11 +71,11 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
       data_variables: []
     };
     component.prev.forEach(prev => {
-      o.init_calls.push(_getInitCalls(components[prev]));
+      o.init_calls.push(_getPartial(components[prev], 'init'));
       o.data_variables.push(_getDataVariable(components[prev]));
     });
     component.next.forEach(next => {
-      o.event_calls.push(_getEventCalls(components[next]));
+      o.event_calls.push(_getPartial(components[next], 'event'));
     });
     var type = component.type;
     return _compileTemplate(path.join(type, type + '.nc.dot'), o);
@@ -80,21 +83,6 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
 
   function _getDataVariable(component) {
     return snakeCase(component.name + 'Data');
-  }
-
-  function _getEventCalls (component) {
-    var type = component.type;
-    return _compileTemplate(path.join(type, type + '.event.nc.dot'), {
-      name: component.name
-    });
-  }
-
-  function _getInitCalls (component) {
-    var type = component.type;
-    return _compileTemplate(path.join(type, type + '.init.nc.dot'), {
-      name: component.name,
-      name_: snakeCase(component.name),
-    });
   }
 
   function _compileTemplate (template_path, obj) {

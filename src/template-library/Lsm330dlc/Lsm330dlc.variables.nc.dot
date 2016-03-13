@@ -1,0 +1,2 @@
+  Accel_t {{=it.name_}}_data;
+  uint8_t {{=it.name_}}_timer_rate;

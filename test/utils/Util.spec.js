@@ -93,6 +93,13 @@ describe('Util', function() {
       c_nc.should.contain('uses interface Packet as RadioPacket;');
       c_nc.should.contain('uses interface AMSend as RadioAMSend;');
 
+      c_nc.should.contain('Accel_t accel_gyro_data;');
+      c_nc.should.contain('uint8_t accel_gyro_timer_rate;');
+      c_nc.should.contain('message_t radio_packet;');
+      c_nc.should.contain('uint8_t radio_send_addr;');
+      c_nc.should.contain('task void RadioSendTask();');
+      c_nc.should.contain('');
+
       c_nc.should.contain([
         '  event void Boot.booted() {',
         '    call RadioSplitControl.start();',

@@ -12,6 +12,8 @@ module {{=it.name}}C {
 }
 
 implementation {
+{{~it.variables :v}}
+{{=v}}{{~}}
 
   event void Boot.booted() {{{~it.init_calls :v}}
     {{=v}}{{~}}
