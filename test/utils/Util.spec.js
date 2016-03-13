@@ -84,8 +84,10 @@ describe('Util', function() {
       var c_nc = fs.readFileSync(path.join(tmpobj.name, 'TestC.nc'), 'utf8');
       var appc_nc = fs.readFileSync(path.join(tmpobj.name, 'TestAppC.nc'), 'utf8');
       var makefile = fs.readFileSync(path.join(tmpobj.name, 'Makefile'), 'utf8');
+      var radio_h = fs.readFileSync(path.join(tmpobj.name, 'Radio.h'), 'utf8');
 
       c_nc.should.contain('#include "Lsm330dlc.h"');
+      c_nc.should.contain('#include "Radio.h"');
 
       c_nc.should.contain('uses interface Read<Accel_t> as AccelGyroAccelRead;');
       c_nc.should.contain('uses interface Timer<TMilli> as AccelGyroTimer');
@@ -153,6 +155,12 @@ describe('Util', function() {
       ].join('\n'));
 
       makefile.should.match(/CFLAGS\+=-I.*Lsm330dlc/);
+
+      radio_h.should.contain([
+        'typedef nx_struct RadioDataMsg {',
+        '  Accel_t data;',
+        '} RadioDataMsg;'
+      ].join('\n'));
 
     });
 

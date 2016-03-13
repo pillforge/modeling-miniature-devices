@@ -1,0 +1,8 @@
+#ifndef {{=it.name}}_H
+#define {{=it.name}}_H
+
+typedef nx_struct {{=it.name}}DataMsg {
+  Accel_t data;
+} {{=it.name}}DataMsg;
+
+#endif

@@ -17,6 +17,12 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
     fs.outputFileSync(path.join(tmpobj.name, obj.name + 'C.nc'), module_nc);
     fs.outputFileSync(path.join(tmpobj.name, obj.name + 'AppC.nc'), config_nc);
     fs.outputFileSync(path.join(tmpobj.name, 'Makefile'), makefile);
+    Object.keys(processed_obj.header_files).forEach(key => {
+      var content = processed_obj.header_files[key];
+      if (content !== null) {
+        fs.outputFileSync(path.join(tmpobj.name, key + '.h'), content);
+      }
+    });
     var execSync = require('child_process').execSync;
     if (target) {
       execSync('make ' + target, {
@@ -35,7 +41,8 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
       variables: [],
       init_calls: [],
       implementations: [],
-      cflags_includes: []
+      cflags_includes: [],
+      header_files: {}
     };
     obj.sink.forEach(sink => {
       o.init_calls.push(_getPartial(components[sink], 'init'));
@@ -47,11 +54,29 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
       o.implementations.push(_getImplementation(components, component));
       if (component.type.indexOf('Tos') !== 0)
         o.cflags_includes.push(path.join(component_library_path, component.type));
+      o.header_files[key] = _getHeader(component);
     });
     o.cflags_includes.forEach(include => {
       o.includes = o.includes.concat(fs.readdirSync(include).filter(file => path.extname(file) === '.h'));
     });
+    Object.keys(o.header_files).forEach(key => {
+      if (o.header_files[key] !== null) {
+        o.includes.push(key + '.h');
+      }
+    });
     return o;
+  }
+
+  function _getHeader (component) {
+    var header_content = null;
+    var type = component.type;
+    var header_path = path.join(template_library_path, type, type + '.h.dot');
+    if (fs.existsSync(header_path)) {
+      header_content = _compileTemplate(path.join(type, type + '.h.dot'), {
+        name: component.name
+      });
+    }
+    return header_content;
   }
 
   function _getPartial (component, part) {
