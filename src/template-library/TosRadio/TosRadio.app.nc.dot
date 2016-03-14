@@ -1,0 +1,5 @@
+  components new {{=it.name}}AMSenderC(AM_{{=it.name.toUpperCase()}});
+  components {{=it.name}}ActiveMessageC;
+  App.{{=it.name}}AMSend -> {{=it.name}}AMSenderC;
+  App.{{=it.name}}SplitControl -> {{=it.name}}ActiveMessageC;
+  App.{{=it.name}}Packet -> {{=it.name}}ActiveMessageC;

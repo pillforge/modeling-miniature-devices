@@ -154,6 +154,17 @@ describe('Util', function() {
         ''
       ].join('\n'));
 
+      appc_nc.should.contain('components Lsm330dlcC as AccelGyro;');
+      appc_nc.should.contain('components new TimerMilliC() as AccelGyroTimer;');
+      appc_nc.should.contain('App.AccelGyroAccelRead -> AccelGyro.AccelRead;');
+      appc_nc.should.contain('App.AccelGyroTimer -> AccelGyroTimer;');
+
+      appc_nc.should.contain('components new RadioAMSenderC(AM_RADIO);');
+      appc_nc.should.contain('components RadioActiveMessageC;');
+      appc_nc.should.contain('App.RadioAMSend -> RadioAMSenderC;');
+      appc_nc.should.contain('App.RadioSplitControl -> RadioActiveMessageC;');
+      appc_nc.should.contain('App.RadioPacket -> RadioActiveMessageC;');
+
       makefile.should.match(/CFLAGS\+=-I.*Lsm330dlc/);
 
       radio_h.should.contain([

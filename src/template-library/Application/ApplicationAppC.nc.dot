@@ -3,6 +3,8 @@
  *
  * Created on: {{=new Date()}}
  */
+{{~it.includes :v}}
+#include "{{=v}}"{{~}}
 
 configuration {{=it.name}}AppC {
 }
@@ -11,4 +13,6 @@ implementation {
   components MainC;
   components {{=it.name}}C as App;
   App.Boot -> MainC;
-}
+{{~it.app_implementations :v}}
+{{=v}}
+{{~}}}

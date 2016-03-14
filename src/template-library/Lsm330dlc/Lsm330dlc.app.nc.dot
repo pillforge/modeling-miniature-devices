@@ -1,0 +1,4 @@
+  components Lsm330dlcC as {{=it.name}};
+  components new TimerMilliC() as {{=it.name}}Timer;
+  App.{{=it.name}}AccelRead -> {{=it.name}}.AccelRead;
+  App.{{=it.name}}Timer -> {{=it.name}}Timer;

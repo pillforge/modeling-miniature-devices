@@ -41,8 +41,9 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
       variables: [],
       init_calls: [],
       implementations: [],
+      header_files: {},
+      app_implementations: [],
       cflags_includes: [],
-      header_files: {}
     };
     obj.sink.forEach(sink => {
       o.init_calls.push(_getPartial(components[sink], 'init'));
@@ -55,6 +56,7 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
       if (component.type.indexOf('Tos') !== 0)
         o.cflags_includes.push(path.join(component_library_path, component.type));
       o.header_files[key] = _getHeader(component);
+      o.app_implementations.push(_getAppImplementation(component));
     });
     o.cflags_includes.forEach(include => {
       o.includes = o.includes.concat(fs.readdirSync(include).filter(file => path.extname(file) === '.h'));
@@ -85,6 +87,10 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
       name: component.name,
       name_: snakeCase(component.name)
     });
+  }
+
+  function _getAppImplementation (component) {
+    return _getPartial(component, 'app');
   }
 
   function _getImplementation (components, component) {
