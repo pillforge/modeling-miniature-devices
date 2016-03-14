@@ -45,18 +45,21 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
       app_implementations: [],
       cflags_includes: [],
     };
-    obj.sink.forEach(sink => {
-      o.init_calls.push(_getPartial(components[sink], 'init'));
-    });
+
     Object.keys(components).forEach(key => {
       var component = components[key];
-      o.interfaces.push(_getPartial(component, 'interfaces'));
-      o.variables.push(_getPartial(component, 'variables'));
-      o.implementations.push(_getImplementation(components, component));
+      var oc = _getComponentObj(component);
+      o.header_files[key] = _getHeader(component);
+      o.interfaces.push(_getPartial('interfaces', oc));
+      o.variables.push(_getPartial('variables', oc));
+      o.implementations.push(_getImplementation(components, component, oc));
       if (component.type.indexOf('Tos') !== 0)
         o.cflags_includes.push(path.join(component_library_path, component.type));
-      o.header_files[key] = _getHeader(component);
-      o.app_implementations.push(_getAppImplementation(component));
+      o.app_implementations.push(_getPartial('app', _getComponentObj(component)));
+    });
+
+    obj.sink.forEach(sink => {
+      o.init_calls.push(_getPartial('init', _getComponentObj(components[sink])));
     });
     o.cflags_includes.forEach(include => {
       o.includes = o.includes.concat(fs.readdirSync(include).filter(file => path.extname(file) === '.h'));
@@ -66,7 +69,18 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
         o.includes.push(key + '.h');
       }
     });
+
     return o;
+  }
+
+  function _getComponentObj (component) {
+    return {
+      name: component.name,
+      type: component.type,
+      name_: snakeCase(component.name),
+      rate: component.rate,
+      interfaces: component.provides.map(conn => conn.src)
+    };
   }
 
   function _getHeader (component) {
@@ -75,46 +89,38 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
     var header_path = path.join(template_library_path, type, type + '.h.dot');
     if (fs.existsSync(header_path)) {
       header_content = _compileTemplate(path.join(type, type + '.h.dot'), {
-        name: component.name
+        name: component.name,
+        data_type: component.prev[0].split(':')[2] // TODO
       });
     }
     return header_content;
   }
 
-  function _getPartial (component, part) {
-    var type = component.type;
-    return _compileTemplate(path.join(type, type + '.' + part + '.nc.dot'), {
-      name: component.name,
-      name_: snakeCase(component.name),
-      rate: component.rate
-    });
+  function _getPartial (part, oc) {
+    return _compileTemplate(path.join(oc.type, oc.type + '.' + part + '.nc.dot'), oc);
   }
 
-  function _getAppImplementation (component) {
-    return _getPartial(component, 'app');
-  }
-
-  function _getImplementation (components, component) {
+  function _getImplementation (components, component, oc) {
     var o = {
       name: component.name,
       name_: snakeCase(component.name),
       init_calls: [],
       event_calls: [],
-      data_variables: []
+      data_variables: [],
+      interfaces: oc.interfaces
     };
     component.prev.forEach(prev => {
-      o.init_calls.push(_getPartial(components[prev], 'init'));
-      o.data_variables.push(_getDataVariable(components[prev]));
+      var prev_split = prev.split(':');
+      var c_name = prev_split[0];
+      var i_name = prev_split[1];
+      o.init_calls.push(_getPartial('init', _getComponentObj(components[c_name])));
+      o.data_variables.push(snakeCase(c_name + i_name + 'Data'));
     });
     component.next.forEach(next => {
-      o.event_calls.push(_getPartial(components[next], 'event'));
+      o.event_calls.push(_getPartial('event', _getComponentObj(components[next])));
     });
     var type = component.type;
     return _compileTemplate(path.join(type, type + '.nc.dot'), o);
-  }
-
-  function _getDataVariable(component) {
-    return snakeCase(component.name + 'Data');
   }
 
   function _compileTemplate (template_path, obj) {
