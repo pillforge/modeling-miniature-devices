@@ -79,7 +79,7 @@ describe('Util', function() {
             next: []
           }
         }
-      }, '');
+      }, target);
 
       var c_nc = fs.readFileSync(path.join(tmpobj.name, 'TestC.nc'), 'utf8');
       var appc_nc = fs.readFileSync(path.join(tmpobj.name, 'TestAppC.nc'), 'utf8');
@@ -96,7 +96,7 @@ describe('Util', function() {
       c_nc.should.contain('uses interface AMSend as RadioAMSend;');
 
       c_nc.should.contain('Accel_t accel_gyro_data;');
-      c_nc.should.contain('uint8_t accel_gyro_timer_rate;');
+      c_nc.should.contain('uint8_t accel_gyro_timer_rate = 100;');
       c_nc.should.contain('message_t radio_packet;');
       c_nc.should.contain('uint8_t radio_send_addr;');
       c_nc.should.contain('task void RadioSendTask();');
@@ -111,7 +111,7 @@ describe('Util', function() {
       c_nc.should.contain([
         '  event void RadioSplitControl.startDone(error_t err) {',
         '    if (err == SUCCESS) {',
-        '      AccelGyroTimer.startPeriodic(accel_gyro_timer_rate);',
+        '      call AccelGyroTimer.startPeriodic(accel_gyro_timer_rate);',
         '    } else {',
         '      call RadioSplitControl.start();',
         '    }',
@@ -159,8 +159,8 @@ describe('Util', function() {
       appc_nc.should.contain('App.AccelGyroAccelRead -> AccelGyro.AccelRead;');
       appc_nc.should.contain('App.AccelGyroTimer -> AccelGyroTimer;');
 
-      appc_nc.should.contain('components new RadioAMSenderC(AM_RADIO);');
-      appc_nc.should.contain('components RadioActiveMessageC;');
+      appc_nc.should.contain('components new AMSenderC(AM_RADIO) as RadioAMSenderC;');
+      appc_nc.should.contain('components ActiveMessageC as RadioActiveMessageC;');
       appc_nc.should.contain('App.RadioAMSend -> RadioAMSenderC;');
       appc_nc.should.contain('App.RadioSplitControl -> RadioActiveMessageC;');
       appc_nc.should.contain('App.RadioPacket -> RadioActiveMessageC;');

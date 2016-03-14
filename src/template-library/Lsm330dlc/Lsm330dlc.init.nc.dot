@@ -1,1 +1,1 @@
-{{=it.name}}Timer.startPeriodic({{=it.name_ + '_timer_rate'}});
+call {{=it.name}}Timer.startPeriodic({{=it.name_ + '_timer_rate'}});

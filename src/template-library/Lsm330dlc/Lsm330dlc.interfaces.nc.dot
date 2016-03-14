@@ -1,2 +1,2 @@
   uses interface Read<Accel_t> as {{=it.name}}AccelRead;
-  uses interface Timer<TMilli> as {{=it.name}}Timer
+  uses interface Timer<TMilli> as {{=it.name}}Timer;

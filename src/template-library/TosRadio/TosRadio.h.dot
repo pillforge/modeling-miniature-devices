@@ -5,4 +5,8 @@ typedef nx_struct {{=it.name}}DataMsg {
   Accel_t data;
 } {{=it.name}}DataMsg;
 
+enum {
+  AM_{{=it.name.toUpperCase()}} = 6
+};
+
 #endif

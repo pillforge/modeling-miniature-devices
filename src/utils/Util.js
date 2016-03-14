@@ -85,7 +85,8 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
     var type = component.type;
     return _compileTemplate(path.join(type, type + '.' + part + '.nc.dot'), {
       name: component.name,
-      name_: snakeCase(component.name)
+      name_: snakeCase(component.name),
+      rate: component.rate
     });
   }
 
