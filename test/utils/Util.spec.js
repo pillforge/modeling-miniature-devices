@@ -301,6 +301,13 @@ describe('Util', function() {
           '  }'
         ].join('\n'));
 
+        c_nc.should.contain([
+          'event void AccelGyroAccelRead.readDone(error_t err, Accel_t val) {',
+          '  accel_gyro_accel_read_data = val;',
+          '  post Radio1SendTask();',
+          '}'
+        ].join('\n  '));
+
         var am1 = radio1_h.match(/AM_RADIO1 = (.*)/)[1];
         var am2 = radio2_h.match(/AM_RADIO2 = (.*)/)[1];
         am1.should.not.equal(am2);

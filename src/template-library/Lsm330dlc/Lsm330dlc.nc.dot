@@ -4,11 +4,11 @@
   }
   {{? it.interfaces.indexOf('AccelRead') !== -1 }}
   event void {{=it.name}}AccelRead.readDone(error_t err, Accel_t val) {
-    {{=it.name_}}_accel_read_data = val;{{~it.event_calls :v}}
+    {{=it.name_}}_accel_read_data = val;{{~it.event_calls.AccelRead :v}}
     {{=v}}{{~}}
   }{{?}}
   {{? it.interfaces.indexOf('GyroRead') !== -1 }}
   event void {{=it.name}}GyroRead.readDone(error_t err, Gyro_t val) {
-    {{=it.name_}}_gyro_read_data = val;{{~it.event_calls :v}}
+    {{=it.name_}}_gyro_read_data = val;{{~it.event_calls.GyroRead :v}}
     {{=v}}{{~}}
   }{{?}}
