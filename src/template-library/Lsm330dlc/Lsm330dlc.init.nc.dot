@@ -1,1 +1,5 @@
-call {{=it.name}}Timer.startPeriodic({{=it.name_ + '_timer_rate'}});
+{{? it.number_of_next !== 1}}atomic {
+  if (++accel_gyro_init_counter == {{=it.number_of_next}}) {
+    call {{=it.name}}Timer.startPeriodic({{=it.name_ + '_timer_rate'}});
+  }
+}{{??}}call {{=it.name}}Timer.startPeriodic({{=it.name_ + '_timer_rate'}});{{?}}

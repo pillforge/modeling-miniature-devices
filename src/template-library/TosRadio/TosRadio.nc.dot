@@ -1,6 +1,6 @@
   event void {{=it.name}}SplitControl.startDone(error_t err) {
     if (err == SUCCESS) {{{~it.init_calls :v}}
-      {{=v}}{{~}}
+      {{=v.split('\n').join('\n      ')}}{{~}}
     } else {
       call {{=it.name}}SplitControl.start();
     }

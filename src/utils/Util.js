@@ -116,7 +116,9 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
       var prev_split = prev.split(':');
       var c_name = prev_split[0];
       var i_name = prev_split[1];
-      o.init_calls.push(_getPartial('init', _getComponentObj(components[c_name])));
+      var oc = _getComponentObj(components[c_name]);
+      oc.number_of_next = components[c_name].provides.length;
+      o.init_calls.push(_getPartial('init', oc));
       o.data_variables.push(snakeCase(c_name + i_name + 'Data'));
     });
     component.next.forEach(next => {

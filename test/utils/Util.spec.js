@@ -103,7 +103,6 @@ describe('Util', function() {
         c_nc.should.contain('message_t radio_packet;');
         c_nc.should.contain('uint8_t radio_send_addr;');
         c_nc.should.contain('task void RadioSendTask();');
-        c_nc.should.contain('');
 
         c_nc.should.contain([
           '  event void Boot.booted() {',
@@ -150,11 +149,6 @@ describe('Util', function() {
         c_nc.should.contain([
           '  event void RadioAMSend.sendDone(message_t* bufPtr, error_t error) {',
           '  }'
-        ].join('\n'));
-
-        c_nc.should.contain([
-          '',
-          ''
         ].join('\n'));
 
         appc_nc.should.contain('components Lsm330dlcC as AccelGyro;');
@@ -290,6 +284,22 @@ describe('Util', function() {
         var makefile = fs.readFileSync(path.join(tmpobj.name, 'Makefile'), 'utf8');
         var radio1_h = fs.readFileSync(path.join(tmpobj.name, 'Radio1.h'), 'utf8');
         var radio2_h = fs.readFileSync(path.join(tmpobj.name, 'Radio2.h'), 'utf8');
+
+        c_nc.should.contain('uint8_t accel_gyro_init_counter = 0;');
+
+        c_nc.should.contain([
+          '  event void Radio1SplitControl.startDone(error_t err) {',
+          '    if (err == SUCCESS) {',
+          '      atomic {',
+          '        if (++accel_gyro_init_counter == 2) {',
+          '          call AccelGyroTimer.startPeriodic(accel_gyro_timer_rate);',
+          '        }',
+          '      }',
+          '    } else {',
+          '      call Radio1SplitControl.start();',
+          '    }',
+          '  }'
+        ].join('\n'));
 
         var am1 = radio1_h.match(/AM_RADIO1 = (.*)/)[1];
         var am2 = radio2_h.match(/AM_RADIO2 = (.*)/)[1];

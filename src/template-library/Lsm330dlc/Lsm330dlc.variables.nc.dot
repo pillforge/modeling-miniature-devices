@@ -1,3 +1,4 @@
 {{? it.interfaces.indexOf('AccelRead') !== -1 }}  Accel_t {{=it.name_}}_accel_read_data;{{?}}
 {{? it.interfaces.indexOf('GyroRead') !== -1 }}  Gyro_t {{=it.name_}}_gyro_read_data;{{?}}
   uint8_t {{=it.name_}}_timer_rate = {{=it.rate}};
+{{? it.number_of_next !== 1}}  uint8_t {{=it.name_}}_init_counter = 0;{{?}}
