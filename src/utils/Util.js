@@ -3,6 +3,7 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
 
   var template_library_path = path.join(module.uri, '..', '..', 'template-library');
   var component_library_path = path.join(module.uri, '..', '..', 'component-library');
+  var globally_unique_number = 0;
 
   return {
     compileApplication: compileApplication
@@ -10,6 +11,7 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
 
   function compileApplication (obj, target) {
     var tmpobj = tmp.dirSync();
+    globally_unique_number = 0;
     var processed_obj = _processObj(obj);
     var module_nc = _compileTemplate('Application/ApplicationC.nc.dot', processed_obj);
     var makefile = _compileTemplate('Application/Makefile.dot', processed_obj);
@@ -90,7 +92,8 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
     if (fs.existsSync(header_path)) {
       header_content = _compileTemplate(path.join(type, type + '.h.dot'), {
         name: component.name,
-        data_type: component.prev[0].split(':')[2] // TODO
+        data_type: component.prev[0].split(':')[2], // TODO
+        globally_unique_number: globally_unique_number++
       });
     }
     return header_content;

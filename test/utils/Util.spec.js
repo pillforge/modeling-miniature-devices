@@ -244,6 +244,57 @@ describe('Util', function() {
           '} RadioDataMsg;'
         ].join('\n'));
       });
+
+      it('should compile with AccelRead and GyroRead interfaces and two Radios', function () {
+        var tmpobj = util.compileApplication({
+          name: 'Test',
+          source: 'AccelGyro',
+          sink: ['Radio1', 'Radio2'],
+          components: {
+            AccelGyro: {
+              name: 'AccelGyro',
+              type: 'Lsm330dlc',
+              rate: 100,
+              provides: [
+                {
+                  src: 'AccelRead',
+                  dst: 'Radio1'
+                },
+                {
+                  src: 'GyroRead',
+                  dst: 'Radio2'
+                }
+              ],
+              prev: [],
+              next: ['Radio1', 'Radio2']
+            },
+            Radio1: {
+              name: 'Radio1',
+              type: 'TosRadio',
+              provides: [],
+              prev: ['AccelGyro:AccelRead:Accel_t'],
+              next: []
+            },
+            Radio2: {
+              name: 'Radio2',
+              type: 'TosRadio',
+              provides: [],
+              prev: ['AccelGyro:GyroRead:Gyro_t'],
+              next: []
+            }
+          }
+        }, target);
+
+        var c_nc = fs.readFileSync(path.join(tmpobj.name, 'TestC.nc'), 'utf8');
+        var appc_nc = fs.readFileSync(path.join(tmpobj.name, 'TestAppC.nc'), 'utf8');
+        var makefile = fs.readFileSync(path.join(tmpobj.name, 'Makefile'), 'utf8');
+        var radio1_h = fs.readFileSync(path.join(tmpobj.name, 'Radio1.h'), 'utf8');
+        var radio2_h = fs.readFileSync(path.join(tmpobj.name, 'Radio2.h'), 'utf8');
+
+        var am1 = radio1_h.match(/AM_RADIO1 = (.*)/)[1];
+        var am2 = radio2_h.match(/AM_RADIO2 = (.*)/)[1];
+        am1.should.not.equal(am2);
+      });
     });
 
   });

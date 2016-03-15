@@ -6,7 +6,7 @@ typedef nx_struct {{=it.name}}DataMsg {
 } {{=it.name}}DataMsg;
 
 enum {
-  AM_{{=it.name.toUpperCase()}} = 6
+  AM_{{=it.name.toUpperCase()}} = {{=it.globally_unique_number}}
 };
 
 #endif
