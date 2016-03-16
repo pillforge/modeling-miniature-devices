@@ -56,7 +56,7 @@ describe('Util', function() {
       it('should compile with AccelRead interface', function () {
         var tmpobj = util.compileApplication({
           name: 'Test',
-          source: 'AccelGyro',
+          source: ['AccelGyro'],
           sink: ['Radio'],
           components: {
             AccelGyro: {
@@ -174,7 +174,7 @@ describe('Util', function() {
       it('should compile with GyroRead interface', function () {
         var tmpobj = util.compileApplication({
           name: 'Test',
-          source: 'AccelGyro',
+          source: ['AccelGyro'],
           sink: ['Radio'],
           components: {
             AccelGyro: {
@@ -242,7 +242,7 @@ describe('Util', function() {
       it('should compile with AccelRead and GyroRead interfaces and two Radios', function () {
         var tmpobj = util.compileApplication({
           name: 'Test',
-          source: 'AccelGyro',
+          source: ['AccelGyro'],
           sink: ['Radio1', 'Radio2'],
           components: {
             AccelGyro: {

@@ -48,13 +48,11 @@ describe('WebgmeUtil', function() {
 
   describe('Empty Application', function() {
     it('should return valid App structure', function(done) {
-      core.loadChildren(context.rootNode)
-        .then(function (children) {
-          return core.loadChildren(findChildByName(children, 'Workspace'));
+      findApplicationNode('EmptyApplication')
+        .then(function (node) {
+          return wutil.getApplicationComponents(core, node);
         })
-        .then(function (children) {
-          var node = findChildByName(children, 'EmptyApplication');
-          var app_structure = wutil.getApplicationComponents(core, node);
+        .then(function (app_structure) {
           app_structure.should.deep.equal({
             name: 'EmptyApplication',
             source: [],
@@ -66,10 +64,59 @@ describe('WebgmeUtil', function() {
     });
   });
 
-  function findChildByName(children, name) {
+  describe('SenseAndSend Application', function() {
+    it('should return valid App structure', function(done) {
+      findApplicationNode('SenseAndSend')
+        .then(function (node) {
+          return wutil.getApplicationComponents(core, node);
+        })
+        .then(function (app_structure) {
+          app_structure.should.deep.equal({
+            name: 'SenseAndSend',
+            source: ['AccelerometerAndGyroscope'],
+            sink: ['Radio'],
+            components: {
+              AccelerometerAndGyroscope: {
+                name: 'AccelerometerAndGyroscope',
+                type: 'Lsm330dlc',
+                rate: 100,
+                provides: [
+                  {
+                    src: 'GyroRead',
+                    dst: 'Radio'
+                  }
+                ],
+                prev: [],
+                next: ['Radio']
+              },
+              Radio: {
+                name: 'Radio',
+                type: 'TosRadio',
+                provides: [],
+                prev: ['AccelerometerAndGyroscope:GyroRead:Gyro_t'],
+                next: []
+              }
+            }
+          });
+        })
+        .nodeify(done);
+    });
+  });
+
+  function findChildByName (children, name) {
     return _.find(children, function (child) {
       return core.getAttribute(child, 'name') === name;
     });
+  }
+
+  function findApplicationNode (name) {
+    return core.loadChildren(context.rootNode)
+      .then(function (children) {
+        return core.loadChildren(findChildByName(children, 'Workspace'));
+      })
+      .then(function (children) {
+        return findChildByName(children, name);
+      });
   }
 
 });
