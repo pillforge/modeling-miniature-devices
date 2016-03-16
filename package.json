@@ -8,6 +8,7 @@
   "dependencies": {
     "dot": "^1.0.3",
     "fs-extra": "^0.26.5",
+    "lodash": "^4.6.1",
     "snake-case": "^1.1.2",
     "tmp": "0.0.28",
     "webgme": "github:webgme/webgme"
