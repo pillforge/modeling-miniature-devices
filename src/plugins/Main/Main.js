@@ -44,8 +44,11 @@ define([
     var target = self.core.getAttribute(self.activeNode, 'target');
     wutil.getApplicationComponents(self.core, self.activeNode)
       .then(function (app_structure) {
+        self.logger.info(JSON.stringify(app_structure, null, '  '));
         var tmpobj = util.compileApplication(app_structure, target);
-        return addBlobs(self, tmpobj.name, app_structure.name);
+        self.logger.info(tmpobj.name);
+        if (tmpobj.__err) throw new Error(tmpobj.err);
+        return zipAndSave(self, tmpobj.name, app_structure.name);
       })
       .then(function (hashes) {
         self.result.addArtifact(hashes[0]);
@@ -58,7 +61,7 @@ define([
       });
   };
 
-  function addBlobs (context, directory, name) {
+  function zipAndSave (context, directory, name) {
     var fs = require('fs-extra');
     var path = require('path');
     var execSync = require('child_process').execSync;

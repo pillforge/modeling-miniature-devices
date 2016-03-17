@@ -26,10 +26,14 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
       }
     });
     var execSync = require('child_process').execSync;
-    if (target) {
-      execSync('make ' + target, {
-        cwd: tmpobj.name
-      });
+    try {
+      if (target) {
+        execSync('make ' + target, {
+          cwd: tmpobj.name
+        });
+      }
+    } catch (error) {
+      tmpobj.__err = error;
     }
     return tmpobj;
   }
@@ -53,6 +57,7 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
       var oc = _getComponentObj(component);
       o.header_files[key] = _getHeader(component);
       o.interfaces.push(_getPartial('interfaces', oc));
+      oc.number_of_next = component.provides.length;
       o.variables.push(_getPartial('variables', oc));
       o.implementations.push(_getImplementation(components, component, oc));
       if (component.type.indexOf('Tos') !== 0)
@@ -90,9 +95,10 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
     var type = component.type;
     var header_path = path.join(template_library_path, type, type + '.h.dot');
     if (fs.existsSync(header_path)) {
+      var data_type = component.prev[0] ? component.prev[0].split(':')[2] : 'nx_uint16_t';  // TODO
       header_content = _compileTemplate(path.join(type, type + '.h.dot'), {
         name: component.name,
-        data_type: component.prev[0].split(':')[2], // TODO
+        data_type: data_type, // TODO
         globally_unique_number: globally_unique_number++
       });
     }
