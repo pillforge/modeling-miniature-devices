@@ -51,9 +51,9 @@ define(['q'], function (Q) {
             dst: dst_name
           });
           obj.components[dst_name].prev.push([
-          src_parent_name,
-          src_name,
-          core.getAttribute(src, 'type')
+            src_parent_name,
+            src_name,
+            core.getAttribute(src, 'type')
           ].join(':'));
         });
         Object.keys(obj.components).forEach(key => {

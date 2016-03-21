@@ -47,14 +47,13 @@ describe('Main', function () {
   });
 
   describe('Compile a list of Applications and return the source code and binaries', function () {
-    var apps = [
-      'EmptyApplication',
+    [ 'EmptyApplication',
       'Sense',
       'Send',
       'SenseAndSend',
-      'TwoRadios'
-    ];
-    apps.forEach(app => {
+      'TwoRadios',
+      // 'CombineTwoSensors'
+    ].forEach(app => {
       testApp(app);
     });
   });
@@ -71,6 +70,30 @@ describe('Main', function () {
         })
         .catch(function (error) {
           error.should.equal(null);
+        })
+        .nodeify(done);
+    });
+  }
+
+  describe('Error handling', function() {
+    [ 'MissingTypeWrongType'
+    ].forEach(app => {
+      testAppFail(app);
+    });
+  });
+
+  function testAppFail (name) {
+    it(name, function(done) {
+      testFixture.findApplicationNode(core, result.rootNode, name)
+        .then(function (node) {
+          return runPlugin(core.getPath(node));
+        })
+        .then(function (plugin_result) {
+          expect(typeof plugin_result).to.equal('object');
+          expect(plugin_result.success).to.equal(false);
+        })
+        .catch(function (error) {
+          error.should.not.equal(null);
         })
         .nodeify(done);
     });

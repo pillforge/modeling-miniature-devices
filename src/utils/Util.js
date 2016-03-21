@@ -1,4 +1,5 @@
-define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (module, path, tmp, fs, dot, snakeCase) {
+define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case', 'lodash'],
+function (module, path, tmp, fs, dot, snakeCase, _) {
   'use strict';
 
   var template_library_path = path.join(module.uri, '..', '..', 'template-library');
@@ -10,6 +11,7 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
   };
 
   function compileApplication (obj, target) {
+    _checkAppStructure(obj);
     var tmpobj = tmp.dirSync();
     globally_unique_number = 0;
     var processed_obj = _processObj(obj);
@@ -36,6 +38,26 @@ define(['module', 'path', 'tmp', 'fs-extra', 'dot', 'snake-case'], function (mod
       tmpobj.__err = error;
     }
     return tmpobj;
+  }
+
+  function _checkAppStructure (app_structure) {
+    var list_of_supported_components = fs.readdirSync(template_library_path).filter(file => {
+      return fs.statSync(path.join(template_library_path, file)).isDirectory();
+    });
+    var list_of_unsupported_used_components = [];
+    Object.keys(app_structure.components).forEach(comp => {
+      var component = app_structure.components[comp];
+      if (!_.includes(list_of_supported_components, component.type)) {
+        if (component.type === '') {
+          list_of_unsupported_used_components.push('Unspecified type for ' + comp);
+        } else {
+          list_of_unsupported_used_components.push('Unsupported type for ' + comp + ': ' + component.type);
+        }
+      }
+    });
+    if (list_of_unsupported_used_components.length > 0) {
+      throw list_of_unsupported_used_components.join('.\n');
+    }
   }
 
   function _processObj (obj) {
