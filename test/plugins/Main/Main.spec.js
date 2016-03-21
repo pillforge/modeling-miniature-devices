@@ -1,19 +1,16 @@
-var testFixture = require('../../globals');
 describe('Main', function () {
   'use strict';
 
-  var gmeConfig = testFixture.getGmeConfig(),
-    expect = testFixture.expect,
-    logger = testFixture.logger.fork('MainPlugin'),
-    PluginCliManager = testFixture.WebGME.PluginCliManager,
-    projectName = 'testProject',
-    pluginName = 'Main',
-    project,
-    gmeAuth,
-    storage;
-
-  var Q = testFixture.Q;
+  var testFixture = require('../../globals');
   var rimraf = testFixture.rimraf;
+  var Q = testFixture.Q;
+  var gmeConfig = testFixture.getGmeConfig();
+  var projectName = 'TestProject';
+  var logger = testFixture.logger.fork('MainPlugin');
+  var gmeAuth, storage, result, core;
+  var PluginCliManager = testFixture.WebGME.PluginCliManager;
+  var pluginName = 'Main';
+  var expect = testFixture.expect;
 
   before(function (done) {
     testFixture.clearDBAndGetGMEAuth(gmeConfig, projectName)
@@ -34,7 +31,8 @@ describe('Main', function () {
         return testFixture.importProject(storage, importParam);
       })
       .then(function (importResult) {
-        project = importResult.project;
+        result = importResult;
+        core = importResult.core;
       })
       .nodeify(done);
   });
@@ -52,7 +50,7 @@ describe('Main', function () {
     var manager = new PluginCliManager(null, logger, gmeConfig);
     var pluginConfig = {};
     var context = {
-      project: project,
+      project: result.project,
       branchName: 'master',
     };
     manager.executePlugin(pluginName, pluginConfig, context, function (err, pluginResult) {

@@ -6,11 +6,10 @@ describe('WebgmeUtil', function() {
   var Q = testFixture.Q;
   var gmeConfig = testFixture.getGmeConfig();
   var projectName = 'TestProject';
-  var logger = testFixture.logger.fork('MainPlugin');
+  var logger = testFixture.logger.fork('WebgmeUtil');
   var gmeAuth, storage, context, core;
 
   var wutil = testFixture.requirejs('src/utils/WebgmeUtil');
-  var _ = require('lodash');
 
   before(function (done) {
     testFixture.clearDBAndGetGMEAuth(gmeConfig, projectName)
@@ -48,7 +47,7 @@ describe('WebgmeUtil', function() {
 
   describe('Empty Application', function() {
     it('should return valid App structure', function(done) {
-      findApplicationNode('EmptyApplication')
+      testFixture.findApplicationNode(core, context.rootNode, 'EmptyApplication')
         .then(function (node) {
           return wutil.getApplicationComponents(core, node);
         })
@@ -66,7 +65,7 @@ describe('WebgmeUtil', function() {
 
   describe('SenseAndSend Application', function() {
     it('should return valid App structure', function(done) {
-      findApplicationNode('SenseAndSend')
+      testFixture.findApplicationNode(core, context.rootNode, 'SenseAndSend')
         .then(function (node) {
           return wutil.getApplicationComponents(core, node);
         })
@@ -102,21 +101,5 @@ describe('WebgmeUtil', function() {
         .nodeify(done);
     });
   });
-
-  function findChildByName (children, name) {
-    return _.find(children, function (child) {
-      return core.getAttribute(child, 'name') === name;
-    });
-  }
-
-  function findApplicationNode (name) {
-    return core.loadChildren(context.rootNode)
-      .then(function (children) {
-        return core.loadChildren(findChildByName(children, 'Workspace'));
-      })
-      .then(function (children) {
-        return findChildByName(children, name);
-      });
-  }
 
 });

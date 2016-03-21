@@ -31,4 +31,21 @@ testFixture.getGmeConfig = getGmeConfig;
 var path = require('path');
 testFixture.rootPath = path.join(__dirname, '..');
 
+testFixture.findChildByName = function (core, children, name) {
+  var _ = require('lodash');
+  return _.find(children, function (child) {
+    return core.getAttribute(child, 'name') === name;
+  });
+};
+
+testFixture.findApplicationNode = function (core, root_node, name) {
+  return core.loadChildren(root_node)
+    .then(function (children) {
+      return core.loadChildren(testFixture.findChildByName(core, children, 'Workspace'));
+    })
+    .then(function (children) {
+      return testFixture.findChildByName(core, children, name);
+    });
+};
+
 module.exports = testFixture;
