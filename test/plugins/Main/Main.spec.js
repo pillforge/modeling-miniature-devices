@@ -46,18 +46,45 @@ describe('Main', function () {
       .nodeify(done);
   });
 
-  it('should run plugin', function (done) {
+  describe('Compile a list of Applications and return the source code and binaries', function () {
+    var apps = [
+      'EmptyApplication',
+      'Sense',
+      'Send',
+      'SenseAndSend',
+      'TwoRadios'
+    ];
+    apps.forEach(app => {
+      testApp(app);
+    });
+  });
+
+  function testApp (name) {
+    it(name, function(done) {
+      testFixture.findApplicationNode(core, result.rootNode, name)
+        .then(function (node) {
+          return runPlugin(core.getPath(node));
+        })
+        .then(function (plugin_result) {
+          expect(typeof plugin_result).to.equal('object');
+          expect(plugin_result.success).to.equal(true);
+        })
+        .catch(function (error) {
+          error.should.equal(null);
+        })
+        .nodeify(done);
+    });
+  }
+
+  function runPlugin (id) {
     var manager = new PluginCliManager(null, logger, gmeConfig);
     var pluginConfig = {};
     var context = {
       project: result.project,
       branchName: 'master',
+      activeNode: id
     };
-    manager.executePlugin(pluginName, pluginConfig, context, function (err, pluginResult) {
-      expect(err).to.equal(null);
-      expect(typeof pluginResult).to.equal('object');
-      expect(pluginResult.success).to.equal(true);
-      done();
-    });
-  });
+    return Q.nfcall(manager.executePlugin, pluginName, pluginConfig, context);
+  }
+
 });
