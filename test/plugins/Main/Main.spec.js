@@ -47,12 +47,13 @@ describe('Main', function () {
   });
 
   describe('Compile a list of Applications and return the source code and binaries', function () {
-    [ 'EmptyApplication',
+    [
+      'EmptyApplication',
       'Sense',
       'Send',
       'SenseAndSend',
       'TwoRadios',
-      // 'CombineTwoSensors'
+      'CombineTwoSensors'
     ].forEach(app => {
       testApp(app);
     });

@@ -47,7 +47,10 @@ define([
         self.logger.info(JSON.stringify(app_structure, null, '  '));
         var tmpobj = util.compileApplication(app_structure, target);
         self.logger.info(tmpobj.name);
-        if (tmpobj.__err) throw new Error(tmpobj.err);
+        if (tmpobj.__err) {
+          self.logger.error(tmpobj.name);
+          throw new Error(tmpobj.__err);
+        }
         return zipAndSave(self, tmpobj.name, app_structure.name);
       })
       .then(function (hashes) {

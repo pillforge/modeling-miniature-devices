@@ -6,6 +6,48 @@ describe('Util', function() {
   var path = require('path');
   var fs = require('fs-extra');
   var util = testFixture.requirejs('src/utils/Util');
+  var wutil = testFixture.requirejs('src/utils/WebgmeUtil');
+
+  var rimraf = testFixture.rimraf;
+  var Q = testFixture.Q;
+  var gmeConfig = testFixture.getGmeConfig();
+  var projectName = 'TestProject';
+  var logger = testFixture.logger.fork('WebgmeUtil');
+  var gmeAuth, storage, result, core;
+
+  before(function (done) {
+    testFixture.clearDBAndGetGMEAuth(gmeConfig, projectName)
+      .then(function (gmeAuth_) {
+        gmeAuth = gmeAuth_;
+        // This uses in memory storage. Use testFixture.getMongoStorage to persist test to database.
+        storage = testFixture.getMemoryStorage(logger, gmeConfig, gmeAuth);
+        return storage.openDatabase();
+      })
+      .then(function () {
+        var importParam = {
+          projectSeed: 'src/seeds/MainProject/MainProject.zip',
+          projectName: projectName,
+          branchName: 'master',
+          logger: logger,
+          gmeConfig: gmeConfig
+        };
+        return testFixture.importProject(storage, importParam);
+      })
+      .then(function (importResult) {
+        result = importResult;
+        core = importResult.core;
+      })
+      .nodeify(done);
+  });
+
+  after(function (done) {
+    storage.closeDatabase()
+      .then(gmeAuth.unload)
+      .then(function () {
+        return Q.nfcall(rimraf, './test-tmp');
+      })
+      .nodeify(done);
+  });
 
   var target = 'exp430';
 
@@ -311,6 +353,54 @@ describe('Util', function() {
         var am1 = radio1_h.match(/AM_RADIO1 = (.*)/)[1];
         var am2 = radio2_h.match(/AM_RADIO2 = (.*)/)[1];
         am1.should.not.equal(am2);
+      });
+    });
+
+    describe('compile an Application with Accumulator', function() {
+      it('should compile with Accumulator', function(done) {
+        testFixture.findApplicationNode(core, result.rootNode, 'CombineTwoSensors')
+          .then(function (node) {
+            return wutil.getApplicationComponents(core, node);
+          })
+          .then(function (app_structure) {
+            var tmpobj = util.compileApplication(app_structure, target);
+            expect(tmpobj.__err).to.equal(undefined);
+            var c_nc = fs.readFileSync(path.join(tmpobj.name, 'CombineTwoSensorsC.nc'), 'utf8');
+            var radio_h = fs.readFileSync(path.join(tmpobj.name, 'Radio.h'), 'utf8');
+            var accumulator_h = fs.readFileSync(path.join(tmpobj.name, 'Accumulator.h'), 'utf8');
+
+            c_nc.should.contain('Accumulator_t accumulator_output_data;');
+            c_nc.should.contain([
+              'task void RadioSendTask() {',
+              '  RadioDataMsg* msg = (RadioDataMsg*) call RadioPacket.getPayload(&radio_packet, sizeof(RadioDataMsg));',
+              '  msg->data = accumulator_output_data;',
+              '  call RadioAMSend.send(radio_send_addr, &radio_packet, sizeof(RadioDataMsg));',
+              '}'
+            ].join('\n  '));
+
+            c_nc.should.contain([
+              'void AccumulatorPassData() {',
+              '  accumulator_output_data.accelerometer_and_gyroscope_gyro_read_data = accelerometer_and_gyroscope_gyro_read_data;',
+              '  accumulator_output_data.accelerometer_and_gyroscope_accel_read_data = accelerometer_and_gyroscope_accel_read_data;',
+              '  post RadioSendTask();',
+              '}'
+            ].join('\n  '));
+
+            radio_h.should.contain([
+              'typedef nx_struct RadioDataMsg {',
+              '  Accumulator_t data;',
+              '} RadioDataMsg;'
+            ].join('\n'));
+
+            accumulator_h.should.contain([
+              'typedef nx_struct Accumulator_t {',
+              '  Gyro_t accelerometer_and_gyroscope_gyro_read_data;',
+              '  Accel_t accelerometer_and_gyroscope_accel_read_data;',
+              '} Accumulator_t;'
+            ].join('\n'));
+
+          })
+          .nodeify(done);
       });
     });
 

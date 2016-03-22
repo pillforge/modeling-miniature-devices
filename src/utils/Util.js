@@ -41,13 +41,11 @@ function (module, path, tmp, fs, dot, snakeCase, _) {
   }
 
   function _checkAppStructure (app_structure) {
-    var list_of_supported_components = fs.readdirSync(template_library_path).filter(file => {
-      return fs.statSync(path.join(template_library_path, file)).isDirectory();
-    });
+    var list_of_supported_templates = _getSupportedComponents(template_library_path);
     var list_of_unsupported_used_components = [];
     Object.keys(app_structure.components).forEach(comp => {
       var component = app_structure.components[comp];
-      if (!_.includes(list_of_supported_components, component.type)) {
+      if (!_.includes(list_of_supported_templates, component.type)) {
         if (component.type === '') {
           list_of_unsupported_used_components.push('Unspecified type for ' + comp);
         } else {
@@ -58,6 +56,12 @@ function (module, path, tmp, fs, dot, snakeCase, _) {
     if (list_of_unsupported_used_components.length > 0) {
       throw list_of_unsupported_used_components.join('.\n');
     }
+  }
+
+  function _getSupportedComponents (kind) {
+    return fs.readdirSync(kind).filter(file => {
+      return fs.statSync(path.join(kind, file)).isDirectory();
+    });
   }
 
   function _processObj (obj) {
@@ -82,7 +86,8 @@ function (module, path, tmp, fs, dot, snakeCase, _) {
       oc.number_of_next = component.provides.length;
       o.variables.push(_getPartial('variables', oc));
       o.implementations.push(_getImplementation(components, component, oc));
-      if (component.type.indexOf('Tos') !== 0)
+      var list_of_supported_components = _getSupportedComponents(component_library_path);
+      if (_.includes(list_of_supported_components, component.type))
         o.cflags_includes.push(path.join(component_library_path, component.type));
       o.app_implementations.push(_getPartial('app', _getComponentObj(component)));
     });
@@ -117,14 +122,24 @@ function (module, path, tmp, fs, dot, snakeCase, _) {
     var type = component.type;
     var header_path = path.join(template_library_path, type, type + '.h.dot');
     if (fs.existsSync(header_path)) {
-      var data_type = component.prev[0] ? component.prev[0].split(':')[2] : 'nx_uint16_t';  // TODO
       header_content = _compileTemplate(path.join(type, type + '.h.dot'), {
         name: component.name,
-        data_type: data_type, // TODO
+        data_fields: _getDataFields(component),
         globally_unique_number: globally_unique_number++
       });
     }
     return header_content;
+  }
+
+  function _getDataFields (component) {
+    return component.prev.map(interf => {
+      var pieces = interf.split(':');
+      var type = pieces[2] ? pieces[2] : pieces[0] + '_t';
+      return {
+        name: snakeCase(pieces[0] + pieces[1]),
+        type: type
+      };
+    });
   }
 
   function _getPartial (part, oc) {

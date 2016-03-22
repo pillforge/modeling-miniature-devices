@@ -1,8 +1,8 @@
 #ifndef {{=it.name.toUpperCase()}}_H
 #define {{=it.name.toUpperCase()}}_H
 
-typedef nx_struct {{=it.name}}DataMsg {
-  {{=it.data_type}} data;
+typedef nx_struct {{=it.name}}DataMsg {{{~it.data_fields :v}}
+  {{=v.type}} data;{{~}}
 } {{=it.name}}DataMsg;
 
 enum {
