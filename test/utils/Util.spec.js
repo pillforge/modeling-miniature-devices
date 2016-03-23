@@ -386,6 +386,7 @@ describe('Util', function() {
               '}'
             ].join('\n  '));
 
+            radio_h.should.contain('#include "Accumulator.h"');
             radio_h.should.contain([
               'typedef nx_struct RadioDataMsg {',
               '  Accumulator_t data;',

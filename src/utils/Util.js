@@ -81,7 +81,7 @@ function (module, path, tmp, fs, dot, snakeCase, _) {
     Object.keys(components).forEach(key => {
       var component = components[key];
       var oc = _getComponentObj(component);
-      o.header_files[key] = _getHeader(component);
+      o.header_files[key] = _getHeader(component, components);
       o.interfaces.push(_getPartial('interfaces', oc));
       oc.number_of_next = component.provides.length;
       o.variables.push(_getPartial('variables', oc));
@@ -117,18 +117,29 @@ function (module, path, tmp, fs, dot, snakeCase, _) {
     };
   }
 
-  function _getHeader (component) {
+  function _getHeader (component, components) {
     var header_content = null;
     var type = component.type;
-    var header_path = path.join(template_library_path, type, type + '.h.dot');
-    if (fs.existsSync(header_path)) {
+    if (_doesHeaderExist(type)) {
       header_content = _compileTemplate(path.join(type, type + '.h.dot'), {
         name: component.name,
+        includes: _getDependentHeaders(component, components),
         data_fields: _getDataFields(component),
         globally_unique_number: globally_unique_number++
       });
     }
     return header_content;
+  }
+
+  function _getDependentHeaders (component, components) {
+    return component.prev.map(c => c.split(':')[0]).filter(c => {
+      return _doesHeaderExist(components[c].type);
+    }).map(c => c + '.h');
+  }
+
+  function _doesHeaderExist (type) {
+    var header_path = path.join(template_library_path, type, type + '.h.dot');
+    return fs.existsSync(header_path);
   }
 
   function _getDataFields (component) {
