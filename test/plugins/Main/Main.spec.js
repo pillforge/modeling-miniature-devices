@@ -53,7 +53,8 @@ describe('Main', function () {
       'Send',
       'SenseAndSend',
       'TwoRadios',
-      'CombineTwoSensors'
+      'CombineTwoSensors',
+      'UseFunction'
     ].forEach(app => {
       testApp(app);
     });
