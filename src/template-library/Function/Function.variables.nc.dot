@@ -1,0 +1,4 @@
+  {{=it.name}}_t {{=it.name_}}_output_data;
+  void {{=it.name}}Init();
+  void {{=it.name}}PassData();
+  {{=it.name}}_t {{=it.name}}();

@@ -1,0 +1,12 @@
+  void {{=it.name}}Init() {{{~it.init_calls :v}}
+    {{=v.split('\n').join('\n    ')}}{{~}}
+  }
+
+  void {{=it.name}}PassData() {
+    {{=it.name_}}_output_data = {{=it.name}}();{{~it.event_calls.Output :v}}
+    {{=v}}{{~}}
+  }
+
+  {{=it.name}}_t {{=it.name}}() {
+    {{=it.definition}}
+  }

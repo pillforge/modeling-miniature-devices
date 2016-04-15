@@ -1,7 +1,6 @@
   void {{=it.name}}Init() {{{~it.init_calls :v}}
     {{=v.split('\n').join('\n    ')}}{{~}}
   }
-
   void {{=it.name}}PassData() {{{~it.data_variables :v}}
     {{=it.name_}}_output_data.{{=v}} = {{=v}};{{~}}{{~it.event_calls.Output :v}}
     {{=v}}{{~}}

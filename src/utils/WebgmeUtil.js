@@ -22,7 +22,9 @@ define(['q'], function (Q) {
             type: core.getAttribute(comp, 'type'),
             provides: [],
             prev: [],
-            next: []
+            next: [],
+            return: core.getAttribute(comp, 'return'),
+            definition: core.getAttribute(comp, 'definition'),
           };
           var rate = core.getAttribute(comp, 'rate');
           if (rate) {

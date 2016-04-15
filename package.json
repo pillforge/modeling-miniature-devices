@@ -6,6 +6,7 @@
   },
   "version": "1.0.0",
   "dependencies": {
+    "commander": "^2.9.0",
     "dot": "^1.0.3",
     "fs-extra": "^0.26.5",
     "lodash": "^4.6.1",

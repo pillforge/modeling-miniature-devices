@@ -1,0 +1,10 @@
+#ifndef {{=it.name.toUpperCase()}}_H
+#define {{=it.name.toUpperCase()}}_H
+{{~it.includes :v}}
+#include "{{=v}}"{{~}}
+
+typedef nx_struct {{=it.name}}_t {
+  {{=it.return}}
+} {{=it.name}}_t;
+
+#endif

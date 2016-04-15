@@ -125,7 +125,8 @@ function (module, path, tmp, fs, dot, snakeCase, _) {
         name: component.name,
         includes: _getDependentHeaders(component, components),
         data_fields: _getDataFields(component),
-        globally_unique_number: globally_unique_number++
+        globally_unique_number: globally_unique_number++,
+        return: component.return
       });
     }
     return header_content;
@@ -164,7 +165,8 @@ function (module, path, tmp, fs, dot, snakeCase, _) {
       init_calls: [],
       event_calls: {},
       data_variables: [],
-      interfaces: oc.interfaces
+      interfaces: oc.interfaces,
+      definition: component.definition
     };
     component.prev.forEach(prev => {
       var prev_split = prev.split(':');

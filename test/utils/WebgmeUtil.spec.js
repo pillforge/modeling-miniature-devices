@@ -86,14 +86,18 @@ describe('WebgmeUtil', function() {
                   }
                 ],
                 prev: [],
-                next: ['Radio']
+                next: ['Radio'],
+                return: undefined,
+                definition: undefined
               },
               Radio: {
                 name: 'Radio',
                 type: 'TosRadio',
                 provides: [],
                 prev: ['AccelerometerAndGyroscope:GyroRead:Gyro_t'],
-                next: []
+                next: [],
+                return: undefined,
+                definition: undefined
               }
             }
           });

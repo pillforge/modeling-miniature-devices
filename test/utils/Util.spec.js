@@ -405,5 +405,21 @@ describe('Util', function() {
       });
     });
 
+    describe('compile an Application with Function', function() {
+      it('should compile with Function', function(done) {
+        testFixture.findApplicationNode(core, result.rootNode, 'UseFunction')
+          .then(function (node) {
+            return wutil.getApplicationComponents(core, node);
+          })
+          .then(function (app_structure) {
+            var tmpobj = util.compileApplication(app_structure, target);
+            expect(tmpobj.__err).to.equal(undefined);
+            var c_nc = fs.readFileSync(path.join(tmpobj.name, 'UseFunctionC.nc'), 'utf8');
+            var function1_h = fs.readFileSync(path.join(tmpobj.name, 'Function1.h'), 'utf8');
+          })
+          .nodeify(done);
+      });
+    });
+
   });
 });

@@ -1,0 +1,40 @@
+#!/usr/bin/env node
+
+'use strict';
+
+var program = require('commander');
+var path = require('path');
+var fs = require('fs-extra');
+
+var template_path = path.resolve(__dirname, '..', 'template-library');
+
+program
+  .version('0.1.0')
+  .usage('<name>')
+  .parse(process.argv);
+
+if (program.args.length !== 1) {
+  console.log('Please provide a single argument');
+  program.help();
+}
+
+var dir_path = path.resolve(template_path, program.args[0]);
+if (!dir_path.startsWith(template_path)) {
+ console.log('Please only use a component name, do not use partial path');
+ program.help();
+}
+
+fs.emptyDirSync(dir_path);
+console.log(dir_path, 'created');
+[ 'app.nc',
+  'event.nc',
+  'h',
+  'init.nc',
+  'interfaces.nc',
+  'nc',
+  'variables.nc'
+].forEach(template => {
+  var name = path.join(dir_path, [program.args[0], template, 'dot'].join('.'));
+  fs.ensureFileSync(name);
+  console.log(name, 'created');
+});
