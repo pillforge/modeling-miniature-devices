@@ -22,7 +22,7 @@ describe('Main', function () {
       })
       .then(function () {
         var importParam = {
-          projectSeed: 'src/seeds/MainProject/MainProject.zip',
+          projectSeed: 'src/seeds/MainProject/MainProject.webgmex',
           projectName: projectName,
           branchName: 'master',
           logger: logger,
