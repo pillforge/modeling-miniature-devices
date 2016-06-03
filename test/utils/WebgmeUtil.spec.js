@@ -88,11 +88,13 @@ describe('WebgmeUtil', function() {
                 prev: [],
                 next: ['Radio'],
                 return: undefined,
-                definition: undefined
+                definition: undefined,
+                address: undefined
               },
               Radio: {
                 name: 'Radio',
                 type: 'TosRadio',
+                address: 2,
                 provides: [],
                 prev: ['AccelerometerAndGyroscope:GyroRead:Gyro_t'],
                 next: [],

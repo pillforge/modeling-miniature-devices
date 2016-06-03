@@ -117,6 +117,7 @@ describe('Util', function() {
             Radio: {
               name: 'Radio',
               type: 'TosRadio',
+              address: 2,
               provides: [],
               prev: ['AccelGyro:AccelRead:Accel_t'],
               next: []
@@ -143,7 +144,7 @@ describe('Util', function() {
         c_nc.should.contain('Accel_t accel_gyro_accel_read_data;');
         c_nc.should.contain('uint8_t accel_gyro_timer_rate = 100;');
         c_nc.should.contain('message_t radio_packet;');
-        c_nc.should.contain('uint8_t radio_send_addr;');
+        c_nc.should.contain('uint8_t radio_send_addr = 2;');
         c_nc.should.contain('task void RadioSendTask();');
 
         c_nc.should.contain([
@@ -235,6 +236,7 @@ describe('Util', function() {
             Radio: {
               name: 'Radio',
               type: 'TosRadio',
+              address: 2,
               provides: [],
               prev: ['AccelGyro:GyroRead:Gyro_t'],
               next: []
@@ -307,6 +309,7 @@ describe('Util', function() {
             Radio1: {
               name: 'Radio1',
               type: 'TosRadio',
+              address: 2,
               provides: [],
               prev: ['AccelGyro:AccelRead:Accel_t'],
               next: []
@@ -314,6 +317,7 @@ describe('Util', function() {
             Radio2: {
               name: 'Radio2',
               type: 'TosRadio',
+              address: 2,
               provides: [],
               prev: ['AccelGyro:GyroRead:Gyro_t'],
               next: []

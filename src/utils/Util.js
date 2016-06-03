@@ -113,6 +113,7 @@ function (module, path, tmp, fs, dot, snakeCase, _) {
       type: component.type,
       name_: snakeCase(component.name),
       rate: component.rate,
+      address: component.address,
       interfaces: component.provides.map(conn => conn.src)
     };
   }
