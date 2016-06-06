@@ -1,6 +1,8 @@
 describe('Main', function () {
   'use strict';
 
+  this.timeout(10000);
+
   var testFixture = require('../../globals');
   var rimraf = testFixture.rimraf;
   var Q = testFixture.Q;

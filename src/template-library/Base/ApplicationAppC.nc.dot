@@ -1,0 +1,23 @@
+/**
+ * Automatically generated file
+ *
+ * Created on: {{=new Date()}}
+ */
+{{~it.includes :v}}
+#include "{{=v}}"{{~}}
+
+configuration {{=it.name}}BaseAppC {
+}
+
+implementation {
+  components MainC;
+  components {{=it.name}}BaseC as App;
+  App.Boot -> MainC;
+  components SerialPrintfC;
+
+  components ActiveMessageC;
+  App.RadioControl -> ActiveMessageC;
+  App.Packet -> ActiveMessageC;
+  components new AMReceiverC(AM_{{=it.base.name.toUpperCase()}});
+  App.Receive -> AMReceiverC;
+}

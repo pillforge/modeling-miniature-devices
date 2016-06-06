@@ -37,7 +37,47 @@ function (module, path, tmp, fs, dot, snakeCase, _) {
     } catch (error) {
       tmpobj.__err = error;
     }
+    _compileBase(obj, processed_obj, tmpobj);
     return tmpobj;
+  }
+
+  function _compileBase (obj, processed_obj, tmpobj) {
+    var radio_obj = null;
+    Object.keys(obj.components).forEach(key => {
+      if (obj.components[key].type === 'TosRadio') {
+        radio_obj = obj.components[key];
+      }
+    });
+    if (!radio_obj) return;
+    var printf = [];
+    if (radio_obj.printf) {
+      radio_obj.printf.split(',').forEach(e => {
+        var data = e.trim().split(':');
+        switch(data[1]) {
+          case 'int':
+            printf.push('printf("%d\\n", rsm->data.' + data[0] + ');');
+            break;
+        }
+      });
+    }
+    processed_obj.base = {
+      name: radio_obj.name,
+      printf: printf
+    };
+    var module_nc = _compileTemplate('Base/ApplicationC.nc.dot', processed_obj);
+    var makefile = _compileTemplate('Base/Makefile.dot', processed_obj);
+    var config_nc = _compileTemplate('Base/ApplicationAppC.nc.dot', processed_obj);
+    fs.outputFileSync(path.join(tmpobj.name, 'Base', obj.name + 'BaseC.nc'), module_nc);
+    fs.outputFileSync(path.join(tmpobj.name, 'Base', obj.name + 'BaseAppC.nc'), config_nc);
+    fs.outputFileSync(path.join(tmpobj.name, 'Base', 'Makefile'), makefile);
+    var execSync = require('child_process').execSync;
+    try {
+      execSync('make ' + 'exp430', {
+        cwd: path.join(tmpobj.name, 'Base')
+      });
+    } catch (error) {
+      console.log('Cannot compile Base Station.\n'); // TODO
+    }
   }
 
   function _checkAppStructure (app_structure) {

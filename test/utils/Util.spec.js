@@ -1,6 +1,8 @@
 describe('Util', function() {
   'use strict';
 
+  this.timeout(10000);
+
   var testFixture = require('../globals');
   var expect = testFixture.expect;
   var path = require('path');

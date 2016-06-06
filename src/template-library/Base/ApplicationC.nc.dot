@@ -1,0 +1,43 @@
+/**
+ * Automatically generated file
+ *
+ * Created on: {{=new Date()}}
+ */
+{{~it.includes :v}}
+#include "{{=v}}"{{~}}
+
+#define NEW_PRINTF_SEMANTICS
+#include "printf.h"
+
+module {{=it.name}}BaseC {
+  uses interface Boot;
+  uses interface SplitControl as RadioControl;
+  uses interface Packet;
+  uses interface Receive;
+}
+
+implementation {
+  message_t packet;
+  uint8_t to_send_addr = 2;
+
+  event void Boot.booted() {
+    printf("Base booted: {{=it.name}}BaseC\n");
+    call RadioControl.start();
+  }
+
+  event void RadioControl.startDone(error_t err) {
+    if (err == SUCCESS) {
+      printf("Base radio started.\n");
+    } else {
+      call RadioControl.start();
+    }
+  }
+
+  event message_t* Receive.receive(message_t* bufPtr, void* payload, uint8_t len) {
+    RadioDataMsg *rsm = (RadioDataMsg *) payload;{{~it.base.printf :v}}
+    {{=v}}{{~}}
+    return bufPtr;
+  }
+
+  event void RadioControl.stopDone(error_t err) {}
+}

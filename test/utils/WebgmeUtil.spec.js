@@ -89,7 +89,9 @@ describe('WebgmeUtil', function() {
                 next: ['Radio'],
                 return: undefined,
                 definition: undefined,
-                address: undefined
+                address: undefined,
+                base: undefined,
+                printf: undefined
               },
               Radio: {
                 name: 'Radio',
@@ -99,7 +101,9 @@ describe('WebgmeUtil', function() {
                 prev: ['AccelerometerAndGyroscope:GyroRead:Gyro_t'],
                 next: [],
                 return: undefined,
-                definition: undefined
+                definition: undefined,
+                base: 'exp430',
+                printf: 'x:int, y:int, z:int'
               }
             }
           });

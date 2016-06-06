@@ -25,7 +25,9 @@ define(['q'], function (Q) {
             next: [],
             return: core.getAttribute(comp, 'return'),
             definition: core.getAttribute(comp, 'definition'),
-            address: core.getAttribute(comp, 'address')
+            address: core.getAttribute(comp, 'address'),
+            base: core.getAttribute(comp, 'base'),
+            printf: core.getAttribute(comp, 'printf')
           };
           var rate = core.getAttribute(comp, 'rate');
           if (rate) {

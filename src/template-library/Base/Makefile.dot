@@ -1,0 +1,4 @@
+COMPONENT={{=it.name}}BaseAppC{{~it.cflags_includes :v}}
+CFLAGS+=-I{{=v}}{{~}}
+CFLAGS+=-I..
+include $(MAKERULES)
