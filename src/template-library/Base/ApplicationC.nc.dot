@@ -18,7 +18,6 @@ module {{=it.name}}BaseC {
 
 implementation {
   message_t packet;
-  uint8_t to_send_addr = 2;
 
   event void Boot.booted() {
     printf("Base booted: {{=it.name}}BaseC\n");
