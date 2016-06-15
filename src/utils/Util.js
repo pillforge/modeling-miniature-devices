@@ -55,10 +55,11 @@ function (module, path, tmp, fs, dot, snakeCase, _) {
         var data = e.trim().split(':');
         switch(data[1]) {
           case 'int':
-            printf.push('printf("%d\\n", rsm->data.' + data[0] + ');');
+            printf.push('printf("' + data[0] + ': %d  ", rsm->data.' + data[0] + ');');
             break;
         }
       });
+      printf.push('printf("\\n");');
     }
     processed_obj.base = {
       name: radio_obj.name,
