@@ -96,7 +96,7 @@ describe('WebgmeUtil', function() {
               Radio: {
                 name: 'Radio',
                 type: 'TosRadio',
-                address: 2,
+                address: 1,
                 provides: [],
                 prev: ['AccelerometerAndGyroscope:GyroRead:Gyro_t'],
                 next: [],
