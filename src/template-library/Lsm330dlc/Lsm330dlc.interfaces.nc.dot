@@ -1,3 +1,4 @@
+  uses interface SplitControl as {{=it.name}}SplitControl;
 {{? it.interfaces.indexOf('AccelRead') !== -1 }}  uses interface Read<Accel_t> as {{=it.name}}AccelRead;{{?}}
 {{? it.interfaces.indexOf('GyroRead') !== -1 }}  uses interface Read<Gyro_t> as {{=it.name}}GyroRead;{{?}}
   uses interface Timer<TMilli> as {{=it.name}}Timer;

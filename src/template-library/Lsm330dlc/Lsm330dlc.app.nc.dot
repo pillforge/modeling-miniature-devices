@@ -1,4 +1,5 @@
   components Lsm330dlcC as {{=it.name}};
+  App.{{=it.name}}SplitControl -> {{=it.name}};
   components new TimerMilliC() as {{=it.name}}Timer;
   {{? it.interfaces.indexOf('AccelRead') !== -1 }}
   App.{{=it.name}}AccelRead -> {{=it.name}}.AccelRead;{{?}}{{? it.interfaces.indexOf('GyroRead') !== -1 }}

@@ -8,6 +8,7 @@ You need to install:
   * mongo database
   * node and npm
   * TinyOS toolchain
+  * Clone the [driver](https://github.com/pillforge/tinyos-drivers) repository to the same parent folder
 
 Once you have the required tools
   * Install dependencies with: `npm install`

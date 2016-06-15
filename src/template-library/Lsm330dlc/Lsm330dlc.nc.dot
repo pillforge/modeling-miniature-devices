@@ -1,3 +1,17 @@
+  event void {{=it.name}}SplitControl.startDone(error_t err) {
+    if (err == SUCCESS) {
+      {{? it.number_of_next > 1}}atomic {
+        if (++{{=it.name_}}_init_counter == {{=it.number_of_next}}) {
+          call {{=it.name}}Timer.startPeriodic({{=it.name_ + '_timer_rate'}});
+        }
+      }{{??}}call {{=it.name}}Timer.startPeriodic({{=it.name_ + '_timer_rate'}});{{?}}{{~it.init_calls :v}}
+      {{=v.split('\n').join('\n      ')}}{{~}}
+    } else {
+      call {{=it.name}}SplitControl.start();
+    }
+  }
+  event void {{=it.name}}SplitControl.stopDone(error_t err) {
+  }
   event void {{=it.name}}Timer.fired() {{{? it.interfaces.indexOf('AccelRead') !== -1 }}
     call {{=it.name}}AccelRead.read();{{?}}{{? it.interfaces.indexOf('GyroRead') !== -1 }}
     call {{=it.name}}GyroRead.read();{{?}}
