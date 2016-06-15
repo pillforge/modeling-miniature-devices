@@ -32,8 +32,8 @@ implementation {
     }
   }
 
-  event message_t* Receive.receive(message_t* bufPtr, void* payload, uint8_t len) {
-    RadioDataMsg *rsm = (RadioDataMsg *) payload;{{~it.base.printf :v}}
+  event message_t* Receive.receive(message_t* bufPtr, void* payload, uint8_t len) {{{? it.base.printf.length > 0}}
+    RadioDataMsg *rsm = (RadioDataMsg *) payload;{{?}}{{~it.base.printf :v}}
     {{=v}}{{~}}
     return bufPtr;
   }
