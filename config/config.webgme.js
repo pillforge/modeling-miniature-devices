@@ -13,12 +13,19 @@ config.seedProjects.basePaths.push('src/seeds/MainProject');
 
 
 
+config.visualization.panelPaths.push('node_modules/webgme-codeeditor/src/visualizers/panels');
 
 
 // Visualizer descriptors
-
+config.visualization.visualizerDescriptors.push('./src/visualizers/Visualizers.json');
 // Add requirejs paths
-
+config.requirejsPaths = {
+  'CodeEditor': 'panels/CodeEditor/CodeEditorPanel',
+  'panels': './src/visualizers/panels',
+  'widgets': './src/visualizers/widgets',
+  'panels/CodeEditor': './node_modules/webgme-codeeditor/src/visualizers/panels/CodeEditor',
+  'widgets/CodeEditor': './node_modules/webgme-codeeditor/src/visualizers/widgets/CodeEditor'
+};
 
 
 config.mongo.uri = 'mongodb://127.0.0.1:27017/modeling_miniature_devices';

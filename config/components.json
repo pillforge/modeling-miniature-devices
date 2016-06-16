@@ -1,0 +1,13 @@
+{
+  "CodeEditor": {
+    "theme": "default",
+    "keyBinding": "sublime",
+    "autoSaveInterval": "2000",
+    "map": {
+      "Function": {
+        "definition": {"name":"text/x-c++src", "useCPP": true},
+        "return": {"name":"text/x-c++src", "useCPP": true}
+      }
+    }
+  }
+}
