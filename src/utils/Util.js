@@ -56,7 +56,19 @@ function (module, path, tmp, fs, dot, snakeCase, _) {
           var type_t = key.split(':')[2];
           var prefix = snakeCase(name + interf);
           if (!type_t || type ==='TosRadio') prefix = snakeCase(curr);
-          result = result.concat(x(obj, name, '').map(e => prefix + '_data.' + e));
+          if (comps[name].return) {
+            var rets = comps[name].return.trim();
+            rets = rets.split(';');
+            rets.forEach(ret => {
+              if (ret === '') return;
+              var ps = ret.trim().split(' ');
+              var ty = ps[0];
+              var va = ps[1];
+              result.push(`${prefix}_data.${va}:int`);
+            });
+          } else {
+            result = result.concat(x(obj, name, '').map(e => prefix + '_data.' + e));
+          }
         });
       } else {
         printf_strc.split(',').forEach(e => {
