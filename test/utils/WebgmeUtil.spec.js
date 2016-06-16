@@ -103,7 +103,7 @@ describe('WebgmeUtil', function() {
                 return: undefined,
                 definition: undefined,
                 base: 'exp430',
-                printf: 'x:int, y:int, z:int'
+                printf: undefined
               }
             }
           });

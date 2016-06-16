@@ -4,7 +4,7 @@
 #include "{{=v}}"{{~}}
 
 typedef nx_struct {{=it.name}}DataMsg {{{~it.data_fields :v}}
-  {{=v.type}} data;{{~}}
+  {{=v.type}} {{=it.name_}}_data;{{~}}
 } {{=it.name}}DataMsg;
 
 enum {

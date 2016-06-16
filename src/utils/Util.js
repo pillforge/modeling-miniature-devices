@@ -41,6 +41,37 @@ function (module, path, tmp, fs, dot, snakeCase, _) {
     return tmpobj;
   }
 
+  // Needs good definition and should work more generic
+  function x(obj, curr) {
+    var result = [];
+    var comps = obj.components;
+    var type = comps[curr].type;
+    var base_printf_path = path.join(template_library_path, type, type + '.base');
+    if (fs.existsSync(base_printf_path)) {
+      var printf_strc = fs.readFileSync(base_printf_path, 'utf8');
+      if (printf_strc === 'PREV') {
+        comps[curr].prev.forEach(key => {
+          var name = key.split(':')[0];
+          var interf = key.split(':')[1];
+          var type_t = key.split(':')[2];
+          var prefix = snakeCase(name + interf);
+          if (!type_t || type ==='TosRadio') prefix = snakeCase(curr);
+          result = result.concat(x(obj, name, '').map(e => prefix + '_data.' + e));
+        });
+      } else {
+        printf_strc.split(',').forEach(e => {
+          var data = e.trim().split(':');
+          switch(data[1]) {
+            case 'int':
+              result.push(data[0] + ':int');
+              break;
+          }
+        });
+      }
+    }
+    return result;
+  }
+
   function _compileBase (obj, processed_obj, tmpobj) {
     var radio_obj = null;
     Object.keys(obj.components).forEach(key => {
@@ -49,18 +80,24 @@ function (module, path, tmp, fs, dot, snakeCase, _) {
       }
     });
     if (!radio_obj) return;
+
     var printf = [];
-    if (radio_obj.printf) {
-      radio_obj.printf.split(',').forEach(e => {
-        var data = e.trim().split(':');
-        switch(data[1]) {
-          case 'int':
-            printf.push('printf("' + data[0] + ': %d  ", rsm->data.' + data[0] + ');');
-            break;
-        }
-      });
-      printf.push('printf("\\n");');
+    var prt = x(obj, radio_obj.name);
+    prt.forEach(key => {
+      var name = key.split(':')[0];
+      var type = key.split(':')[1];
+      switch (type) {
+        case 'int':
+          type = '%d';
+          break;
+      }
+      var str = `printf("${name}: ${type}  ", rdm->${name});`;
+      printf.push(str);
+    });
+    if (printf.length > 0) {
+      printf.push(`printf("\\n");`);
     }
+
     processed_obj.base = {
       name: radio_obj.name,
       printf: printf
@@ -165,6 +202,7 @@ function (module, path, tmp, fs, dot, snakeCase, _) {
     if (_doesHeaderExist(type)) {
       header_content = _compileTemplate(path.join(type, type + '.h.dot'), {
         name: component.name,
+        name_: snakeCase(component.name),
         includes: _getDependentHeaders(component, components),
         data_fields: _getDataFields(component),
         globally_unique_number: globally_unique_number++,

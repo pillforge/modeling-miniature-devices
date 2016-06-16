@@ -8,7 +8,7 @@
 
   task void {{=it.name}}SendTask() {{{? it.data_variables[0] }}
     {{=it.name}}DataMsg* msg = ({{=it.name}}DataMsg*) call {{=it.name}}Packet.getPayload(&{{=it.name_}}_packet, sizeof({{=it.name}}DataMsg));
-    msg->data = {{=it.data_variables[0]}};
+    msg->{{=it.name_}}_data = {{=it.data_variables[0]}};
     call {{=it.name}}AMSend.send({{=it.name_}}_send_addr, &{{=it.name_}}_packet, sizeof({{=it.name}}DataMsg));{{?}}
   }
 

@@ -181,7 +181,7 @@ describe('Util', function() {
         c_nc.should.contain([
           '  task void RadioSendTask() {',
           '    RadioDataMsg* msg = (RadioDataMsg*) call RadioPacket.getPayload(&radio_packet, sizeof(RadioDataMsg));',
-          '    msg->data = accel_gyro_accel_read_data;',
+          '    msg->radio_data = accel_gyro_accel_read_data;',
           '    call RadioAMSend.send(radio_send_addr, &radio_packet, sizeof(RadioDataMsg));',
           '  }'
         ].join('\n'));
@@ -211,7 +211,7 @@ describe('Util', function() {
 
         radio_h.should.contain([
           'typedef nx_struct RadioDataMsg {',
-          '  Accel_t data;',
+          '  Accel_t radio_data;',
           '} RadioDataMsg;'
         ].join('\n'));
       });
@@ -271,7 +271,7 @@ describe('Util', function() {
         c_nc.should.contain([
           '  task void RadioSendTask() {',
           '    RadioDataMsg* msg = (RadioDataMsg*) call RadioPacket.getPayload(&radio_packet, sizeof(RadioDataMsg));',
-          '    msg->data = accel_gyro_gyro_read_data;',
+          '    msg->radio_data = accel_gyro_gyro_read_data;',
           '    call RadioAMSend.send(radio_send_addr, &radio_packet, sizeof(RadioDataMsg));',
           '  }'
         ].join('\n'));
@@ -280,7 +280,7 @@ describe('Util', function() {
 
         radio_h.should.contain([
           'typedef nx_struct RadioDataMsg {',
-          '  Gyro_t data;',
+          '  Gyro_t radio_data;',
           '} RadioDataMsg;'
         ].join('\n'));
       });
@@ -380,7 +380,7 @@ describe('Util', function() {
             c_nc.should.contain([
               'task void RadioSendTask() {',
               '  RadioDataMsg* msg = (RadioDataMsg*) call RadioPacket.getPayload(&radio_packet, sizeof(RadioDataMsg));',
-              '  msg->data = accumulator_output_data;',
+              '  msg->radio_data = accumulator_output_data;',
               '  call RadioAMSend.send(radio_send_addr, &radio_packet, sizeof(RadioDataMsg));',
               '}'
             ].join('\n  '));
@@ -396,7 +396,7 @@ describe('Util', function() {
             radio_h.should.contain('#include "Accumulator.h"');
             radio_h.should.contain([
               'typedef nx_struct RadioDataMsg {',
-              '  Accumulator_t data;',
+              '  Accumulator_t radio_data;',
               '} RadioDataMsg;'
             ].join('\n'));
 
