@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+#Installs binaries to the MCR and base station
+
+Dir.chdir ARGV[0] do
+  system "pwd"
+  system 'mspdebug tilib "" "prog build/vumcr/main.ihex"'
+  Dir.chdir 'Base' do
+    system "pwd"
+    system 'tos-set-symbols --objcopy msp430-objcopy --objdump msp430-objdump --target ihex build/exp430/main.ihex build/exp430/main.ihex.out-1 TOS_NODE_ID=1 ActiveMessageAddressC__addr=1'
+    system 'mspdebug rf2500 "" "prog build/exp430/main.ihex.out-1"'
+  end
+end
+
