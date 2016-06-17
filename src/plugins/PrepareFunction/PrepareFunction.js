@@ -68,16 +68,31 @@ define([
         var template = [];
         template = template.concat([
           '/*',
-          'Fill between dashed lines below as in C function',
-          'Define output data type in return attribute',
-          'Available input variables and types as follows:',
+          'Fill in between dashed lines below as in a C function',
+          'Define output data type in the \'return\' attribute',
+          '',
+          'Definition of types:',
+          'typedef nx_struct Accel_t {',
+          '  nx_int16_t x;',
+          '  nx_int16_t y;',
+          '  nx_int16_t z;',
+          '} Accel_t;',
+          'typedef Accel_t Gyro_t;',
+          '',
+          'Definition of the return type:',
+          'typedef nx_struct Function1_t {',
+          core.getAttribute(node, 'return').split('\n').map(e => '  ' + e).join('\n'),
+          '} Function1_t;',
+          '',
+          'Available input variables and types are as follows:',
           ''
         ]);
         prevs.forEach(key => {
           key = key.split(':');
-          template.push(key[2] + ' ' + snakeCase(key[0] + key[1] + 'Data'));
+          template.push(key[2] + ' ' + snakeCase(key[0] + key[1] + 'Data') + ';');
         });
         template = template.concat([
+          '',
           '*/',
           `${name}_t result;`,
           '//---------------------------------------------------',
