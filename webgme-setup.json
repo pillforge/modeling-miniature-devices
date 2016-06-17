@@ -12,6 +12,10 @@
       "Main": {
         "src": "src/plugins/Main",
         "test": "test/plugins/Main"
+      },
+      "PrepareFunction": {
+        "src": "src/plugins/PrepareFunction",
+        "test": "test/plugins/PrepareFunction"
       }
     },
     "visualizers": {}

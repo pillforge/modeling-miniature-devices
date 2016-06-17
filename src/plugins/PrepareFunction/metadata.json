@@ -1,0 +1,14 @@
+{
+  "id": "PrepareFunction",
+  "name": "Prepare",
+  "version": "0.1.0",
+  "description": "Prepare function definition based on its inputs",
+  "icon": {
+    "class": "glyphicon glyphicon-cog",
+    "src": ""
+  },
+  "disableServerSideExecution": false,
+  "disableBrowserSideExecution": false,
+  "writeAccessRequired": false,
+  "configStructure": []
+}
